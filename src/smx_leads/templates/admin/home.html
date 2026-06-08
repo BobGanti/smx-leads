@@ -1,0 +1,29 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ leads_config.host_site_title }} · {{ leads_config.module_title }} Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <main>
+    <header>
+      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+      <h1>Leads Admin Dashboard</h1>
+      <p>Manage lead submissions for {{ leads_config.host_site_title }}.</p>
+    </header>
+
+    <section>
+      <h2>Quick actions</h2>
+      <nav>
+        <a href="/leads/admin/submissions">View submissions</a>
+        <a href="/leads">Open public lead form</a>
+      </nav>
+    </section>
+
+    <form method="post" action="/leads/admin/logout">
+      <button type="submit">Log out</button>
+    </form>
+  </main>
+</body>
+</html>
