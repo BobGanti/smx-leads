@@ -1,8 +1,8 @@
-﻿from smx_leads import ensure_leads_scaffold, setup_leads
+from pathlib import Path
 
+from flask import Flask
 
-class DummyApp:
-    pass
+from smx_leads import ensure_leads_scaffold, setup_leads
 
 
 def test_setup_leads_import_contract_exists():
@@ -45,9 +45,17 @@ def test_scaffold_creates_client_owned_leads_folder(tmp_path):
 
 
 def test_setup_leads_creates_scaffold_and_returns_app(tmp_path):
-    app = DummyApp()
+    app = Flask(__name__)
 
     result = setup_leads(app, project_root=tmp_path)
 
     assert result is app
     assert (tmp_path / "leads" / "smx_leads_setup.py").is_file()
+
+
+def test_package_includes_html_templates_for_wheel_distribution():
+    pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
+
+    assert "[tool.setuptools.package-data]" in pyproject
+    assert "templates/admin/*.html" in pyproject
+    assert "templates/public/*.html" in pyproject
