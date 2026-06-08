@@ -1,0 +1,24 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ leads_config.host_site_title }} · Thank you</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <main>
+    <header>
+      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+      <h1>Thank you</h1>
+    </header>
+
+    <section>
+      <p>Your enquiry has been received.</p>
+      {% if lead_id %}
+        <p>Reference: {{ lead_id }}</p>
+      {% endif %}
+      <p><a href="/leads">Send another enquiry</a></p>
+    </section>
+  </main>
+</body>
+</html>

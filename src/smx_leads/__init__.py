@@ -1,14 +1,27 @@
 ﻿from __future__ import annotations
 
+from smx_leads.core.config import build_leads_config_from_env
+from smx_leads.routes_public import create_public_leads_blueprint
+from smx_leads.runtime import LeadsRuntime
 from smx_leads.smxcp import ensure_leads_scaffold
 
 
 def init_leads(app, *, config=None, init_schema: bool = False):
     """
     Initialize smx-leads.
-
-    Route/database registration will be added in the next patch.
     """
+    resolved_config = config or {}
+
+    runtime = LeadsRuntime.from_mapping(resolved_config)
+
+    if runtime.config.flask_secret_key and not getattr(app, "secret_key", None):
+        app.config["SECRET_KEY"] = runtime.config.flask_secret_key
+
+    if init_schema:
+        runtime.init_schema()
+
+    app.register_blueprint(create_public_leads_blueprint(runtime))
+
     return app
 
 
@@ -20,12 +33,12 @@ def init_leads_from_env(
 ):
     """
     Initialize smx-leads from the client-owned env file.
-
-    Full env parsing will be added in the next patch.
     """
+    config = build_leads_config_from_env(env_file=env_file)
+
     return init_leads(
         app,
-        config={},
+        config=config,
         init_schema=init_schema,
     )
 
