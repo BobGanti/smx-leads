@@ -1,0 +1,76 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ leads_config.host_site_title }} · {{ leads_config.module_title }} Submissions Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <main>
+    <header>
+      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+      <h1>Lead submissions</h1>
+      <p>Review and follow up on incoming enquiries.</p>
+    </header>
+
+    <nav>
+      <a href="/leads/admin">Admin dashboard</a>
+      <a href="/leads">Public lead form</a>
+    </nav>
+
+    <section>
+      <form method="get" action="/leads/admin/submissions">
+        <label>
+          Status
+          <select name="status">
+            <option value="">All statuses</option>
+            {% for status in statuses %}
+              <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label>
+          Source
+          <input type="text" name="source" value="{{ selected_source }}">
+        </label>
+
+        <button type="submit">Filter</button>
+      </form>
+    </section>
+
+    <section>
+      {% if submissions %}
+        <table>
+          <thead>
+            <tr>
+              <th>Created</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Subject</th>
+              <th>Open</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in submissions %}
+              <tr>
+                <td>{{ item.created_at }}</td>
+                <td>{{ item.full_name }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.source }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.subject }}</td>
+                <td><a href="/leads/admin/submissions/{{ item.public_id }}">View</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No lead submissions yet.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

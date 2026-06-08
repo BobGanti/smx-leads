@@ -1,0 +1,63 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ leads_config.host_site_title }} · Lead Submission Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <main>
+    <header>
+      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+      <h1>Lead submission</h1>
+    </header>
+
+    <nav>
+      <a href="/leads/admin">Admin dashboard</a>
+      <a href="/leads/admin/submissions">Back to submissions</a>
+    </nav>
+
+    {% if error %}
+      <section role="alert">
+        <strong>{{ error }}</strong>
+      </section>
+    {% endif %}
+
+    {% if submission %}
+      <section>
+        <h2>{{ submission.full_name }}</h2>
+        <p>Email: {{ submission.email }}</p>
+        <p>Phone: {{ submission.phone }}</p>
+        <p>Company: {{ submission.company }}</p>
+        <p>Source: {{ submission.source }}</p>
+        <p>Status: {{ submission.status }}</p>
+        <p>Subject: {{ submission.subject }}</p>
+
+        <h3>Message</h3>
+        <p>{{ submission.message }}</p>
+      </section>
+
+      <section>
+        <h2>Update status</h2>
+        <form method="post" action="/leads/admin/submissions/{{ submission.public_id }}/status">
+          <label>
+            Status
+            <select name="status">
+              {% for status in statuses %}
+                <option value="{{ status }}" {% if submission.status == status %}selected{% endif %}>{{ status }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+          <label>
+            Internal notes
+            <textarea name="internal_notes">{{ submission.internal_notes }}</textarea>
+          </label>
+
+          <button type="submit">Update lead</button>
+        </form>
+      </section>
+    {% endif %}
+  </main>
+</body>
+</html>
