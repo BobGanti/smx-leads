@@ -2,6 +2,7 @@
 
 from flask import Blueprint, jsonify, redirect, render_template, request
 
+from smx_leads.notifications import LeadNotificationEmailService
 from smx_leads.repository import LeadRepository
 from smx_leads.runtime import LeadsRuntime
 
@@ -60,6 +61,14 @@ def create_public_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
                         or "",
                     },
                 )
+
+            # Email notifications must never block lead capture.
+            try:
+                LeadNotificationEmailService(
+                    config=runtime.config,
+                ).send_new_lead_notification(lead)
+            except Exception:
+                pass
 
         except ValueError as exc:
             if _wants_json():
