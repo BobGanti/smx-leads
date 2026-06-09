@@ -30,7 +30,7 @@ def create_leads_static_blueprint() -> Blueprint:
     )
 
 
-def init_leads(app, *, config=None, init_schema: bool = False):
+def init_leads(app, *, config=None, init_schema: bool = False, ai_client=None):
     """
     Initialize smx-leads.
     """
@@ -47,7 +47,7 @@ def init_leads(app, *, config=None, init_schema: bool = False):
     app.register_blueprint(create_leads_static_blueprint())
     app.register_blueprint(create_leads_assets_blueprint(runtime))
     app.register_blueprint(create_public_leads_blueprint(runtime))
-    app.register_blueprint(create_admin_leads_blueprint(runtime))
+    app.register_blueprint(create_admin_leads_blueprint(runtime, ai_client=ai_client))
 
     return app
 
@@ -57,6 +57,7 @@ def init_leads_from_env(
     *,
     env_file: str = "leads/.smx_leads.env",
     init_schema: bool = False,
+    ai_client=None,
 ):
     """
     Initialize smx-leads from the client-owned env file.
@@ -67,6 +68,7 @@ def init_leads_from_env(
         app,
         config=config,
         init_schema=init_schema,
+        ai_client=ai_client,
     )
 
 
@@ -75,6 +77,7 @@ def setup_leads(
     *,
     project_root=None,
     init_schema: bool = True,
+    ai_client=None,
 ):
     """
     Create the client scaffold and initialize smx-leads.
@@ -85,6 +88,7 @@ def setup_leads(
         app,
         env_file=scaffold.env_file,
         init_schema=init_schema,
+        ai_client=ai_client,
     )
 
 

@@ -69,6 +69,30 @@
       </section>
 
       <section class="smx-panel">
+        <h2>Lead AI agent</h2>
+        <form method="post" action="/leads/admin/submissions/{{ submission.public_id }}/ai/analyze">
+          <button type="submit">Analyze lead</button>
+        </form>
+      </section>
+
+      {% if ai_insight %}
+        <section class="smx-panel">
+          <h2>AI insight</h2>
+          <p><strong>Summary:</strong> {{ ai_insight.summary }}</p>
+          <p><strong>Category:</strong> {{ ai_insight.category }}</p>
+          <p><strong>Priority:</strong> {{ ai_insight.priority }}</p>
+          <p><strong>Suggested status:</strong> {{ ai_insight.suggested_status }}</p>
+          <p><strong>Spam risk:</strong> {{ ai_insight.spam_risk }}</p>
+
+          <h3>Recommended action</h3>
+          <p>{{ ai_insight.recommended_action }}</p>
+
+          <h3>Draft reply</h3>
+          <p>{{ ai_insight.draft_reply }}</p>
+        </section>
+      {% endif %}
+
+      <section class="smx-panel">
         <h2>Update status</h2>
         <form method="post" action="/leads/admin/submissions/{{ submission.public_id }}/status">
           <label>

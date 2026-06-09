@@ -6,6 +6,8 @@ from pathlib import Path
 from flask import Blueprint, jsonify, redirect, render_template, request, session
 from werkzeug.utils import secure_filename
 
+from smx_leads.ai import LeadAIService
+from smx_leads.ai.repository import LeadAIInsightRepository
 from smx_leads.models import LeadSubmissionStatus
 from smx_leads.repository import LeadRepository
 from smx_leads.runtime import LeadsRuntime
@@ -14,7 +16,7 @@ from smx_leads.runtime import LeadsRuntime
 ADMIN_SESSION_KEY = "smx_leads_admin_authenticated"
 
 
-def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
+def create_admin_leads_blueprint(runtime: LeadsRuntime, *, ai_client=None) -> Blueprint:
     bp = Blueprint(
         "smx_leads_admin",
         __name__,
@@ -206,6 +208,8 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
         with runtime.session_scope() as db_session:
             repo = LeadRepository(db_session)
             submission = repo.get_submission(public_id)
+            ai_repo = LeadAIInsightRepository(db_session)
+            ai_insight = ai_repo.get_latest_for_lead(lead_public_id=public_id)
 
         if submission is None:
             if _wants_json():
@@ -216,6 +220,7 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
                 leads_config=runtime.config,
                 submission=None,
                 statuses=[item.value for item in LeadSubmissionStatus],
+                ai_insight=None,
                 error="Lead submission not found.",
             ), 404
 
@@ -243,6 +248,7 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
             leads_config=runtime.config,
             submission=submission,
             statuses=[item.value for item in LeadSubmissionStatus],
+            ai_insight=ai_insight,
             error=None,
         )
 
@@ -273,6 +279,7 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
                 leads_config=runtime.config,
                 submission=current,
                 statuses=[item.value for item in LeadSubmissionStatus],
+                ai_insight=None,
                 error=str(exc),
             ), 400
 
@@ -289,6 +296,72 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
             )
 
         return redirect(f"/leads/admin/submissions/{public_id}", code=303)
+
+
+    @bp.post("/leads/admin/submissions/<public_id>/ai/analyze")
+    @require_admin
+    def analyze_submission_with_ai(public_id: str):
+        if ai_client is None:
+            if _wants_json():
+                return jsonify({"error": "Lead AI client is not configured."}), 503
+
+            with runtime.session_scope() as db_session:
+                repo = LeadRepository(db_session)
+                current = repo.get_submission(public_id)
+                ai_repo = LeadAIInsightRepository(db_session)
+                ai_insight = ai_repo.get_latest_for_lead(lead_public_id=public_id)
+
+            return render_template(
+                "admin/submission_detail.html",
+                leads_config=runtime.config,
+                submission=current,
+                statuses=[item.value for item in LeadSubmissionStatus],
+                ai_insight=ai_insight,
+                error="Lead AI client is not configured.",
+            ), 503
+
+        with runtime.session_scope() as db_session:
+            repo = LeadRepository(db_session)
+            submission = repo.get_submission(public_id)
+
+            if submission is None:
+                if _wants_json():
+                    return jsonify({"error": "Lead submission not found."}), 404
+
+                return render_template(
+                    "admin/submission_detail.html",
+                    leads_config=runtime.config,
+                    submission=None,
+                    statuses=[item.value for item in LeadSubmissionStatus],
+                    ai_insight=None,
+                    error="Lead submission not found.",
+                ), 404
+
+            insight = LeadAIService(ai_client=ai_client).analyze_lead(submission)
+
+            ai_repo = LeadAIInsightRepository(db_session)
+            stored = ai_repo.create_insight(
+                lead_public_id=public_id,
+                insight=insight,
+            )
+
+        if _wants_json():
+            return jsonify(
+                {
+                    "status": "ok",
+                    "ai_insight": {
+                        "id": stored.id,
+                        "summary": stored.summary,
+                        "category": stored.category,
+                        "priority": stored.priority,
+                        "suggested_status": stored.suggested_status,
+                        "spam_risk": stored.spam_risk,
+                    },
+                }
+            ), 201
+
+        return redirect(f"/leads/admin/submissions/{public_id}", code=303)
+
 
     return bp
 
