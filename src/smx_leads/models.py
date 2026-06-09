@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import Any
 import uuid
 
-from sqlalchemy import DateTime, Integer, String, Text, JSON
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, JSON
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -57,3 +57,33 @@ class LeadSubmissionRow(LeadsBase):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+
+
+class LeadAIInsightRow(LeadsBase):
+    __tablename__ = "smx_lead_ai_insights"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    lead_public_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("smx_lead_submissions.public_id"),
+        nullable=False,
+        index=True,
+    )
+
+    summary: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    category: Mapped[str] = mapped_column(String(64), nullable=False, default="general_enquiry")
+    priority: Mapped[str] = mapped_column(String(32), nullable=False, default="medium")
+    suggested_status: Mapped[str] = mapped_column(String(32), nullable=False, default="reviewed")
+    recommended_action: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    draft_reply: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    spam_risk: Mapped[str] = mapped_column(String(32), nullable=False, default="low")
+    model_name: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    raw: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
