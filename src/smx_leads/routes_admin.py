@@ -1,8 +1,10 @@
 ﻿from __future__ import annotations
 
 from functools import wraps
+from pathlib import Path
 
 from flask import Blueprint, jsonify, redirect, render_template, request, session
+from werkzeug.utils import secure_filename
 
 from smx_leads.models import LeadSubmissionStatus
 from smx_leads.repository import LeadRepository
@@ -103,6 +105,59 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
             "admin/home.html",
             leads_config=runtime.config,
         )
+
+    @bp.get("/leads/admin/branding")
+    @require_admin
+    def branding_page():
+        if _wants_json():
+            return jsonify(
+                {
+                    "status": "ok",
+                    "logo_url": runtime.config.logo_url,
+                    "favicon_url": runtime.config.favicon_url,
+                }
+            )
+
+        return render_template(
+            "admin/branding.html",
+            leads_config=runtime.config,
+            error=None,
+            message=None,
+        )
+
+    @bp.post("/leads/admin/branding/assets")
+    @require_admin
+    def update_branding_assets():
+        try:
+            updated = _save_branding_assets(runtime)
+        except ValueError as exc:
+            if _wants_json():
+                return jsonify({"error": str(exc)}), 400
+
+            return render_template(
+                "admin/branding.html",
+                leads_config=runtime.config,
+                error=str(exc),
+                message=None,
+            ), 400
+
+        if _wants_json():
+            return jsonify(
+                {
+                    "status": "ok",
+                    "updated": updated,
+                    "logo_url": runtime.config.logo_url,
+                    "favicon_url": runtime.config.favicon_url,
+                }
+            )
+
+        return render_template(
+            "admin/branding.html",
+            leads_config=runtime.config,
+            error=None,
+            message="Branding assets updated.",
+        )
+
 
     @bp.get("/leads/admin/submissions")
     @require_admin
@@ -236,6 +291,41 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime) -> Blueprint:
         return redirect(f"/leads/admin/submissions/{public_id}", code=303)
 
     return bp
+
+
+
+def _save_branding_assets(runtime: LeadsRuntime) -> list[str]:
+    assets_dir = Path(runtime.config.assets_dir)
+    assets_dir.mkdir(parents=True, exist_ok=True)
+
+    updated: list[str] = []
+
+    logo = request.files.get("logo")
+    if logo and logo.filename:
+        _save_png_upload(logo, assets_dir / "logo.png")
+        updated.append("logo")
+
+    favicon = request.files.get("favicon")
+    if favicon and favicon.filename:
+        _save_png_upload(favicon, assets_dir / "favicon.png")
+        updated.append("favicon")
+
+    if not updated:
+        raise ValueError("Upload a logo or favicon file.")
+
+    return updated
+
+
+def _save_png_upload(upload, destination: Path) -> None:
+    filename = secure_filename(upload.filename or "")
+    if not filename.lower().endswith(".png"):
+        raise ValueError("Only PNG files are supported for branding assets.")
+
+    data = upload.read()
+    if not data.startswith(b"\x89PNG"):
+        raise ValueError("Uploaded branding asset must be a PNG file.")
+
+    destination.write_bytes(data)
 
 
 def _payload() -> dict:

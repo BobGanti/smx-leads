@@ -1,8 +1,8 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{{ leads_config.host_site_title }} · Lead Submission Admin</title>
+  <title>{{ leads_config.host_site_title }} · {{ leads_config.module_title }} Branding Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/leads/static/smx-leads.css">
   {% if leads_config.favicon_url %}
@@ -30,8 +30,8 @@
 
   <main class="smx-shell">
     <section class="smx-panel smx-hero">
-      <h1>Lead submission</h1>
-      <p><a href="/leads/admin/submissions">Back to submissions</a></p>
+      <h1>Branding/settings</h1>
+      <p>Replace the default logo and favicon used by the leads plugin.</p>
     </section>
 
     {% if error %}
@@ -40,41 +40,45 @@
       </section>
     {% endif %}
 
-    {% if submission %}
+    {% if message %}
       <section class="smx-panel">
-        <h2>{{ submission.full_name }}</h2>
-        <p>Email: {{ submission.email }}</p>
-        <p>Phone: {{ submission.phone }}</p>
-        <p>Company: {{ submission.company }}</p>
-        <p>Source: {{ submission.source }}</p>
-        <p>Status: {{ submission.status }}</p>
-        <p>Subject: {{ submission.subject }}</p>
-
-        <h3>Message</h3>
-        <p>{{ submission.message }}</p>
-      </section>
-
-      <section class="smx-panel">
-        <h2>Update status</h2>
-        <form method="post" action="/leads/admin/submissions/{{ submission.public_id }}/status">
-          <label>
-            Status
-            <select name="status">
-              {% for status in statuses %}
-                <option value="{{ status }}" {% if submission.status == status %}selected{% endif %}>{{ status }}</option>
-              {% endfor %}
-            </select>
-          </label>
-
-          <label>
-            Internal notes
-            <textarea name="internal_notes">{{ submission.internal_notes }}</textarea>
-          </label>
-
-          <button type="submit">Update lead</button>
-        </form>
+        <strong>{{ message }}</strong>
       </section>
     {% endif %}
+
+    <section class="smx-panel">
+      <h2>Current assets</h2>
+      <div class="smx-grid">
+        <div class="smx-card">
+          <h3>Logo</h3>
+          <img class="smx-brand-logo" src="{{ leads_config.logo_url }}" alt="{{ leads_config.host_site_title }} logo">
+          <p class="smx-muted">{{ leads_config.logo_url }}</p>
+        </div>
+
+        <div class="smx-card">
+          <h3>Favicon</h3>
+          <img class="smx-brand-logo" src="{{ leads_config.favicon_url }}" alt="{{ leads_config.host_site_title }} favicon">
+          <p class="smx-muted">{{ leads_config.favicon_url }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="smx-panel">
+      <h2>Upload replacement assets</h2>
+      <form method="post" action="/leads/admin/branding/assets" enctype="multipart/form-data">
+        <label>
+          Logo PNG
+          <input type="file" name="logo" accept="image/png">
+        </label>
+
+        <label>
+          Favicon PNG
+          <input type="file" name="favicon" accept="image/png">
+        </label>
+
+        <button type="submit">Update branding assets</button>
+      </form>
+    </section>
   </main>
 </body>
 </html>
