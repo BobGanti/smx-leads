@@ -1,0 +1,279 @@
+﻿:root {
+  color-scheme: light;
+  --smx-bg: #f5f7fb;
+  --smx-panel: #ffffff;
+  --smx-text: #07182d;
+  --smx-muted: #5f6f89;
+  --smx-border: #dfe6ef;
+  --smx-accent: #087f73;
+  --smx-accent-dark: #06685f;
+  --smx-danger: #b42318;
+  --smx-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--smx-bg);
+  color: var(--smx-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+main {
+  width: min(1120px, calc(100% - 32px));
+  margin: 32px auto;
+}
+
+a {
+  color: var(--smx-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.smx-shell {
+  display: grid;
+  gap: 24px;
+}
+
+.smx-panel {
+  background: var(--smx-panel);
+  border: 1px solid var(--smx-border);
+  border-radius: 24px;
+  box-shadow: var(--smx-shadow);
+  padding: 28px;
+}
+
+.smx-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.smx-title h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+}
+
+.smx-title p,
+.smx-muted {
+  color: var(--smx-muted);
+  margin: 0;
+}
+
+.smx-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.smx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.smx-card {
+  display: block;
+  border: 1px solid var(--smx-border);
+  border-radius: 18px;
+  padding: 20px;
+  background: #fff;
+}
+
+.smx-card h2,
+.smx-card h3 {
+  margin: 0 0 8px;
+}
+
+.smx-alert {
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff4f2;
+  color: var(--smx-danger);
+  border: 1px solid #ffd6d1;
+  font-weight: 800;
+}
+
+form {
+  display: grid;
+  gap: 16px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 800;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+button,
+.smx-button {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 14px;
+  padding: 11px 18px;
+  background: var(--smx-accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:hover,
+.smx-button:hover {
+  background: var(--smx-accent-dark);
+  text-decoration: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--smx-border);
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: var(--smx-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 720px) {
+  main {
+    width: min(100% - 20px, 1120px);
+    margin: 16px auto;
+  }
+
+  .smx-panel {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .smx-header {
+    display: grid;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.smx-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: min(1120px, calc(100% - 32px));
+  margin: 16px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--smx-border);
+  border-radius: 22px;
+  box-shadow: var(--smx-shadow);
+  backdrop-filter: blur(10px);
+}
+
+.smx-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--smx-text);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.smx-brand:hover {
+  text-decoration: none;
+}
+
+.smx-brand-mark {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--smx-text);
+  color: #fff;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.smx-nav-form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.smx-nav-form button {
+  padding: 9px 14px;
+}
+
+.smx-hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1.05;
+}
+
+.smx-hero p {
+  color: var(--smx-muted);
+  margin: 0;
+}
+
+.smx-honeypot {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .smx-topbar {
+    width: min(100% - 20px, 1120px);
+    display: grid;
+    align-items: start;
+  }
+
+  .smx-nav {
+    width: 100%;
+  }
+}
+

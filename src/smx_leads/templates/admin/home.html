@@ -1,29 +1,49 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{{ leads_config.host_site_title }} · {{ leads_config.module_title }} Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/leads/static/smx-leads.css">
 </head>
 <body>
-  <main>
-    <header>
-      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+  <header class="smx-topbar">
+    <a class="smx-brand" href="/leads/admin">
+      <span class="smx-brand-mark">SMX</span>
+      <span>{{ leads_config.module_title }} Admin</span>
+    </a>
+
+    <nav class="smx-nav" aria-label="Leads admin navigation">
+      <a href="{{ leads_config.host_home_url }}">Main site</a>
+      <a href="/leads">Lead form</a>
+      <a href="/leads/admin">Admin</a>
+      <a href="/leads/admin/submissions">Submissions</a>
+      <form class="smx-nav-form" method="post" action="/leads/admin/logout">
+        <button type="submit">Log out</button>
+      </form>
+    </nav>
+  </header>
+
+  <main class="smx-shell">
+    <section class="smx-panel smx-hero">
       <h1>Leads Admin Dashboard</h1>
       <p>Manage lead submissions for {{ leads_config.host_site_title }}.</p>
-    </header>
-
-    <section>
-      <h2>Quick actions</h2>
-      <nav>
-        <a href="/leads/admin/submissions">View submissions</a>
-        <a href="/leads">Open public lead form</a>
-      </nav>
     </section>
 
-    <form method="post" action="/leads/admin/logout">
-      <button type="submit">Log out</button>
-    </form>
+    <section class="smx-panel">
+      <h2>Quick actions</h2>
+      <div class="smx-grid">
+        <a class="smx-card" href="/leads/admin/submissions">
+          <h3>View submissions</h3>
+          <p class="smx-muted">Review incoming leads and update follow-up status.</p>
+        </a>
+
+        <a class="smx-card" href="/leads">
+          <h3>Open public lead form</h3>
+          <p class="smx-muted">Preview the enquiry page seen by visitors.</p>
+        </a>
+      </div>
+    </section>
   </main>
 </body>
 </html>

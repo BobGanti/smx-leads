@@ -25,4 +25,5 @@ testpaths = ["tests"]
 smx_leads = [
     "templates/admin/*.html",
     "templates/public/*.html",
+    "static/*.css",
 ]

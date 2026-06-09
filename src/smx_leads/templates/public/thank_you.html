@@ -1,23 +1,36 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{{ leads_config.host_site_title }} · Thank you</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/leads/static/smx-leads.css">
 </head>
 <body>
-  <main>
-    <header>
-      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
-      <h1>Thank you</h1>
-    </header>
+  <header class="smx-topbar">
+    <a class="smx-brand" href="/leads">
+      <span class="smx-brand-mark">SMX</span>
+      <span>{{ leads_config.module_title }}</span>
+    </a>
 
-    <section>
+    <nav class="smx-nav" aria-label="Leads navigation">
+      <a href="{{ leads_config.host_home_url }}">Main site</a>
+      <a href="/leads">Lead form</a>
+      <a href="/leads/admin">Admin</a>
+    </nav>
+  </header>
+
+  <main class="smx-shell">
+    <section class="smx-panel smx-hero">
+      <h1>Thank you</h1>
       <p>Your enquiry has been received.</p>
+    </section>
+
+    <section class="smx-panel">
       {% if lead_id %}
         <p>Reference: {{ lead_id }}</p>
       {% endif %}
-      <p><a href="/leads">Send another enquiry</a></p>
+      <p><a class="smx-button" href="/leads">Send another enquiry</a></p>
     </section>
   </main>
 </body>

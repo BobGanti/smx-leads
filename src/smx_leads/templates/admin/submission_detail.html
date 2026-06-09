@@ -1,30 +1,43 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{{ leads_config.host_site_title }} · Lead Submission Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/leads/static/smx-leads.css">
 </head>
 <body>
-  <main>
-    <header>
-      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
-      <h1>Lead submission</h1>
-    </header>
+  <header class="smx-topbar">
+    <a class="smx-brand" href="/leads/admin">
+      <span class="smx-brand-mark">SMX</span>
+      <span>{{ leads_config.module_title }} Admin</span>
+    </a>
 
-    <nav>
-      <a href="/leads/admin">Admin dashboard</a>
-      <a href="/leads/admin/submissions">Back to submissions</a>
+    <nav class="smx-nav" aria-label="Leads admin navigation">
+      <a href="{{ leads_config.host_home_url }}">Main site</a>
+      <a href="/leads">Lead form</a>
+      <a href="/leads/admin">Admin</a>
+      <a href="/leads/admin/submissions">Submissions</a>
+      <form class="smx-nav-form" method="post" action="/leads/admin/logout">
+        <button type="submit">Log out</button>
+      </form>
     </nav>
+  </header>
+
+  <main class="smx-shell">
+    <section class="smx-panel smx-hero">
+      <h1>Lead submission</h1>
+      <p><a href="/leads/admin/submissions">Back to submissions</a></p>
+    </section>
 
     {% if error %}
-      <section role="alert">
+      <section class="smx-alert" role="alert">
         <strong>{{ error }}</strong>
       </section>
     {% endif %}
 
     {% if submission %}
-      <section>
+      <section class="smx-panel">
         <h2>{{ submission.full_name }}</h2>
         <p>Email: {{ submission.email }}</p>
         <p>Phone: {{ submission.phone }}</p>
@@ -37,7 +50,7 @@
         <p>{{ submission.message }}</p>
       </section>
 
-      <section>
+      <section class="smx-panel">
         <h2>Update status</h2>
         <form method="post" action="/leads/admin/submissions/{{ submission.public_id }}/status">
           <label>

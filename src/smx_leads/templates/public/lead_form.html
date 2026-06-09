@@ -1,25 +1,38 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{{ leads_config.host_site_title }} · {{ leads_config.module_title }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/leads/static/smx-leads.css">
 </head>
 <body>
-  <main>
-    <header>
-      <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+  <header class="smx-topbar">
+    <a class="smx-brand" href="/leads">
+      <span class="smx-brand-mark">SMX</span>
+      <span>{{ leads_config.module_title }}</span>
+    </a>
+
+    <nav class="smx-nav" aria-label="Leads navigation">
+      <a href="{{ leads_config.host_home_url }}">Main site</a>
+      <a href="/leads">Lead form</a>
+      <a href="/leads/admin">Admin</a>
+    </nav>
+  </header>
+
+  <main class="smx-shell">
+    <section class="smx-panel smx-hero">
       <h1>{{ leads_config.module_title }}</h1>
       <p>Send us your enquiry and we will get back to you.</p>
-    </header>
+    </section>
 
     {% if error %}
-      <section role="alert">
+      <section class="smx-alert" role="alert">
         <strong>{{ error }}</strong>
       </section>
     {% endif %}
 
-    <section>
+    <section class="smx-panel">
       <form method="post" action="/leads/submit">
         <input type="hidden" name="source" value="{{ form.source or 'contact' }}">
 
@@ -53,10 +66,10 @@
           <textarea name="message" required>{{ form.message or '' }}</textarea>
         </label>
 
-        <div style="display:none">
+        <div class="smx-honeypot" aria-hidden="true">
           <label>
             Website
-            <input type="text" name="website" value="">
+            <input type="text" name="website" value="" tabindex="-1" autocomplete="off">
           </label>
         </div>
 

@@ -1,10 +1,21 @@
 ﻿from __future__ import annotations
 
+from flask import Blueprint
+
 from smx_leads.core.config import build_leads_config_from_env
 from smx_leads.routes_admin import create_admin_leads_blueprint
 from smx_leads.routes_public import create_public_leads_blueprint
 from smx_leads.runtime import LeadsRuntime
 from smx_leads.smxcp import ensure_leads_scaffold
+
+
+def create_leads_static_blueprint() -> Blueprint:
+    return Blueprint(
+        "smx_leads_static",
+        __name__,
+        static_folder="static",
+        static_url_path="/leads/static",
+    )
 
 
 def init_leads(app, *, config=None, init_schema: bool = False):
@@ -21,6 +32,7 @@ def init_leads(app, *, config=None, init_schema: bool = False):
     if init_schema:
         runtime.init_schema()
 
+    app.register_blueprint(create_leads_static_blueprint())
     app.register_blueprint(create_public_leads_blueprint(runtime))
     app.register_blueprint(create_admin_leads_blueprint(runtime))
 
@@ -64,6 +76,7 @@ def setup_leads(
 
 
 __all__ = [
+    "create_leads_static_blueprint",
     "ensure_leads_scaffold",
     "init_leads",
     "init_leads_from_env",

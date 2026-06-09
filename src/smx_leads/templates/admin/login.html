@@ -1,27 +1,40 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{% if leads_config %}{{ leads_config.host_site_title }} · {{ leads_config.module_title }} Admin Login{% else %}Leads Admin Login{% endif %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/leads/static/smx-leads.css">
 </head>
 <body>
-  <main>
-    <header>
+  <header class="smx-topbar">
+    <a class="smx-brand" href="/leads/admin">
+      <span class="smx-brand-mark">SMX</span>
+      <span>{% if leads_config %}{{ leads_config.module_title }} Admin{% else %}Leads Admin{% endif %}</span>
+    </a>
+
+    <nav class="smx-nav" aria-label="Leads admin navigation">
       {% if leads_config %}
-        <a href="{{ leads_config.host_home_url }}">Back to {{ leads_config.host_site_title }}</a>
+        <a href="{{ leads_config.host_home_url }}">Main site</a>
       {% endif %}
+      <a href="/leads">Lead form</a>
+      <a href="/leads/admin/login">Admin login</a>
+    </nav>
+  </header>
+
+  <main class="smx-shell">
+    <section class="smx-panel smx-hero">
       <h1>Leads Admin</h1>
       <p>Enter the admin token to manage lead submissions.</p>
-    </header>
+    </section>
 
     {% if error %}
-      <section role="alert">
+      <section class="smx-alert" role="alert">
         <strong>{{ error }}</strong>
       </section>
     {% endif %}
 
-    <section>
+    <section class="smx-panel">
       <form method="post" action="/leads/admin/login">
         <label>
           Admin token
@@ -31,10 +44,6 @@
         <button type="submit">Log in</button>
       </form>
     </section>
-
-    <nav>
-      <a href="/leads">Public lead form</a>
-    </nav>
   </main>
 </body>
 </html>
