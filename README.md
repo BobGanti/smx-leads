@@ -441,3 +441,133 @@ Remove-Item -Recurse -Force dist build -ErrorAction SilentlyContinue
 python -m build
 ```
 
+
+---
+
+## 20. Lead AI Agent
+
+`smx-leads` includes an optional Lead AI Agent workflow.
+
+The Lead AI Agent helps admins understand and respond to incoming lead submissions. It can:
+
+- Summarize a lead submission
+- Classify the lead type
+- Estimate lead priority
+- Suggest the next lead status
+- Recommend a follow-up action
+- Draft a reply
+- Estimate spam risk
+
+The AI workflow is admin-triggered. The plugin does not automatically call AI for every new lead.
+
+### Host-Provided AI Client Rule
+
+`smx-leads` does not instantiate or own LLMs.
+
+The host SyntaxMatrix project must provide the AI/model infrastructure.
+
+This keeps the architecture consistent with the SyntaxMatrix plugin pattern:
+
+```text
+SyntaxMatrix host project
+  -> owns model providers, AI clients, routing, guardrails
+
+smx-leads plugin
+  -> owns lead workflow, prompts, contracts, persistence, and admin UI
+```
+
+The AI client is passed into the plugin:
+
+```python
+from smx_leads import setup_leads
+
+setup_leads(
+    app,
+    project_root=PROJECT_ROOT,
+    init_schema=True,
+    ai_client=host_provided_ai_client,
+)
+```
+
+The host-provided AI client must implement this contract:
+
+```python
+class LeadAIClient:
+    def generate_lead_insight(self, *, prompt: str) -> dict:
+        ...
+```
+
+### Admin AI Route
+
+The admin-triggered AI route is:
+
+```text
+/leads/admin/submissions/<public_id>/ai/analyze
+```
+
+This route is protected by admin authentication and remains under the `/leads/admin` namespace.
+
+If no AI client is configured, the route returns a clear error instead of trying to create a model internally.
+
+### AI Insight Persistence
+
+AI analysis results are stored separately from the original lead submission.
+
+The AI insight table stores:
+
+```text
+summary
+category
+priority
+suggested_status
+recommended_action
+draft_reply
+spam_risk
+model_name
+raw
+created_at
+```
+
+This preserves the original lead while allowing multiple AI analyses to be stored over time.
+
+### AI Insight Categories
+
+Supported AI insight categories:
+
+```text
+general_enquiry
+demo_request
+pilot_request
+support_request
+partnership
+waitlist
+sales
+spam
+```
+
+Supported priority values:
+
+```text
+low
+medium
+high
+```
+
+Supported spam risk values:
+
+```text
+low
+medium
+high
+```
+
+Supported suggested statuses:
+
+```text
+new
+reviewed
+contacted
+closed
+spam
+```
+
