@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 from dataclasses import dataclass
+from importlib import resources
 from pathlib import Path
 
 
@@ -12,6 +13,7 @@ DEPLOY_ENV_EXAMPLE_FILE_NAME = ".smx_leads.deploy_example.env"
 DATA_DIR_NAME = "data"
 ASSETS_DIR_NAME = "assets"
 DEV_DB_FILE_NAME = "smx_leads_dev.db"
+DEFAULT_ASSETS_PACKAGE = "smx_leads.default_assets"
 
 
 FALLBACK_PNG_BYTES = (
@@ -72,10 +74,10 @@ def ensure_leads_scaffold(
     _write_if_missing(init_file, "")
     _write_if_missing(setup_file, _render_setup_file())
     _write_if_missing(env_example_file, _render_env_example_file())
-    _write_if_missing(env_file, _render_runtime_env_file(db_file=db_file))
+    _write_if_missing(env_file, _render_runtime_env_file(db_file=db_file, assets_dir=assets_dir))
     _write_if_missing(deploy_env_example_file, _render_deploy_env_example_file())
-    _write_bytes_if_missing(logo_file, FALLBACK_PNG_BYTES)
-    _write_bytes_if_missing(favicon_file, FALLBACK_PNG_BYTES)
+    _copy_default_asset_if_missing("logo.png", logo_file)
+    _copy_default_asset_if_missing("favicon.png", favicon_file)
 
     return SmxLeadsScaffold(
         project_root=root,
@@ -99,15 +101,23 @@ def _write_if_missing(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def _write_bytes_if_missing(path: Path, content: bytes) -> None:
-    if path.exists():
+def _copy_default_asset_if_missing(asset_name: str, destination: Path) -> None:
+    if destination.exists():
         return
 
-    path.write_bytes(content)
+    try:
+        asset = resources.files(DEFAULT_ASSETS_PACKAGE).joinpath(asset_name)
+        destination.write_bytes(asset.read_bytes())
+    except Exception:
+        destination.write_bytes(FALLBACK_PNG_BYTES)
 
 
 def _sqlite_url_for(path: Path) -> str:
     return "sqlite+pysqlite:///" + path.resolve().as_posix()
+
+
+def _path_value(path: Path) -> str:
+    return path.resolve().as_posix()
 
 
 def _render_setup_file() -> str:
@@ -167,13 +177,13 @@ SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
-SMX_LEADS_ASSETS_DIR=./leads/assets
+SMX_LEADS_ASSETS_DIR={_path_value(assets_dir)}
 SMX_LEADS_LOGO_URL=/leads/assets/logo.png
 SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 '''
 
 
-def _render_runtime_env_file(*, db_file: Path) -> str:
+def _render_runtime_env_file(*, db_file: Path, assets_dir: Path) -> str:
     return f'''# smx-leads local runtime environment
 #
 # This file is customer-owned after creation.
@@ -191,7 +201,7 @@ SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
-SMX_LEADS_ASSETS_DIR=./leads/assets
+SMX_LEADS_ASSETS_DIR={_path_value(assets_dir)}
 SMX_LEADS_LOGO_URL=/leads/assets/logo.png
 SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 '''

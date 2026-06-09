@@ -27,4 +27,5 @@ smx_leads = [
     "templates/admin/*.html",
     "templates/public/*.html",
     "static/*.css",
+    "default_assets/*.png",
 ]

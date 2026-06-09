@@ -5,11 +5,14 @@
   <title>{{ leads_config.host_site_title }} · {{ leads_config.module_title }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/leads/static/smx-leads.css">
+  {% if leads_config.favicon_url %}
+    <link rel="icon" href="{{ leads_config.favicon_url }}">
+  {% endif %}
 </head>
 <body>
   <header class="smx-topbar">
     <a class="smx-brand" href="/leads">
-      <span class="smx-brand-mark">SMX</span>
+      {% if leads_config.logo_url %}<img class="smx-brand-logo" src="{{ leads_config.logo_url }}" alt="{{ leads_config.host_site_title }} logo">{% else %}<span class="smx-brand-mark">SMX</span>{% endif %}
       <span>{{ leads_config.module_title }}</span>
     </a>
 

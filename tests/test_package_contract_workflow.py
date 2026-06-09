@@ -45,7 +45,8 @@ def test_scaffold_creates_client_owned_leads_folder(tmp_path):
 
     assert "SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///" in env_text
     assert "SMX_LEADS_ADMIN_TOKEN=local-leads-admin-token" in env_text
-    assert "SMX_LEADS_ASSETS_DIR=./leads/assets" in env_text
+    assert "SMX_LEADS_ASSETS_DIR=" in env_text
+    assert "/leads/assets" in env_text.replace("\\", "/")
     assert "SMX_LEADS_LOGO_URL=/leads/assets/logo.png" in env_text
     assert "SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png" in env_text
 
@@ -68,3 +69,14 @@ def test_package_includes_html_templates_for_wheel_distribution():
     assert "[tool.setuptools.package-data]" in pyproject
     assert "templates/admin/*.html" in pyproject
     assert "templates/public/*.html" in pyproject
+
+
+def test_package_has_default_branding_assets():
+    logo = Path("src/smx_leads/default_assets/logo.png")
+    favicon = Path("src/smx_leads/default_assets/favicon.png")
+
+    assert logo.is_file()
+    assert favicon.is_file()
+    assert logo.read_bytes().startswith(b"\x89PNG")
+    assert favicon.read_bytes().startswith(b"\x89PNG")
+
