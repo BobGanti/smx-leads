@@ -177,7 +177,7 @@ SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
-SMX_LEADS_ASSETS_DIR={_path_value(assets_dir)}
+SMX_LEADS_ASSETS_DIR=./leads/assets
 SMX_LEADS_LOGO_URL=/leads/assets/logo.png
 SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 '''
