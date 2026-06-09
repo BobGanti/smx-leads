@@ -268,12 +268,6 @@ th {
 @media (max-width: 760px) {
   .smx-topbar {
     width: min(100% - 20px, 1800px);
-    display: grid;
-    align-items: start;
-  }
-
-  .smx-nav {
-    width: 100%;
   }
 }
 
@@ -283,5 +277,91 @@ th {
   object-fit: contain;
   border-radius: 10px;
   background: #fff;
+}
+
+.smx-mobile-menu {
+  display: none;
+  position: relative;
+}
+
+.smx-mobile-menu summary {
+  list-style: none;
+  cursor: pointer;
+  border: 1px solid var(--smx-border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.smx-mobile-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.smx-mobile-menu-icon,
+.smx-mobile-menu-icon::before,
+.smx-mobile-menu-icon::after {
+  display: block;
+  width: 24px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--smx-text);
+  content: "";
+}
+
+.smx-mobile-menu-icon {
+  position: relative;
+}
+
+.smx-mobile-menu-icon::before {
+  position: absolute;
+  top: -8px;
+}
+
+.smx-mobile-menu-icon::after {
+  position: absolute;
+  top: 8px;
+}
+
+.smx-mobile-menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 240px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--smx-border);
+  border-radius: 18px;
+  box-shadow: var(--smx-shadow);
+}
+
+.smx-mobile-menu-panel a {
+  padding: 8px 4px;
+}
+
+.smx-mobile-menu-form {
+  display: grid;
+  margin: 0;
+}
+
+.smx-mobile-menu-form button {
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .smx-topbar {
+    display: flex;
+    align-items: center;
+  }
+
+  .smx-desktop-nav {
+    display: none;
+  }
+
+  .smx-mobile-menu {
+    display: block;
+    margin-left: auto;
+  }
 }
 

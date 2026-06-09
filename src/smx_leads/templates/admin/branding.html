@@ -12,11 +12,11 @@
 <body>
   <header class="smx-topbar">
     <a class="smx-brand" href="/leads/admin">
-      {% if leads_config.logo_url %}<img class="smx-brand-logo" src="{{ leads_config.logo_url }}" alt="{{ leads_config.host_site_title }} logo">{% else %}<span class="smx-brand-mark">SMX</span>{% endif %}
+      {% if leads_config and leads_config.logo_url %}<img class="smx-brand-logo" src="{{ leads_config.logo_url }}" alt="{{ leads_config.host_site_title }} logo">{% else %}<span class="smx-brand-mark">SMX</span>{% endif %}
       <span>{{ leads_config.module_title }} Admin</span>
     </a>
 
-    <nav class="smx-nav" aria-label="Leads admin navigation">
+    <nav class="smx-nav smx-desktop-nav" aria-label="Leads admin navigation">
       <a href="{{ leads_config.host_home_url }}">Main site</a>
       <a href="/leads">Lead form</a>
       <a href="/leads/admin">Admin</a>
@@ -26,6 +26,20 @@
         <button type="submit">Log out</button>
       </form>
     </nav>
+
+    <details class="smx-mobile-menu">
+      <summary aria-label="Open menu"><span class="smx-mobile-menu-icon" aria-hidden="true"></span></summary>
+      <nav class="smx-mobile-menu-panel" aria-label="Mobile leads admin navigation">
+      <a href="{{ leads_config.host_home_url }}">Main site</a>
+      <a href="/leads">Lead form</a>
+      <a href="/leads/admin">Admin</a>
+      <a href="/leads/admin/submissions">Submissions</a>
+      <a href="/leads/admin/branding">Branding/settings</a>
+      <form class="smx-mobile-menu-form" method="post" action="/leads/admin/logout">
+        <button type="submit">Log out</button>
+      </form>
+      </nav>
+    </details>
   </header>
 
   <main class="smx-shell">

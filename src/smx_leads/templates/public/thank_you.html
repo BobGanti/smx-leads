@@ -16,11 +16,20 @@
       <span>{{ leads_config.module_title }}</span>
     </a>
 
-    <nav class="smx-nav" aria-label="Leads navigation">
+    <nav class="smx-nav smx-desktop-nav" aria-label="Leads navigation">
       <a href="{{ leads_config.host_home_url }}">Main site</a>
       <a href="/leads">Lead form</a>
       <a href="/leads/admin">Admin</a>
     </nav>
+
+    <details class="smx-mobile-menu">
+      <summary aria-label="Open menu"><span class="smx-mobile-menu-icon" aria-hidden="true"></span></summary>
+      <nav class="smx-mobile-menu-panel" aria-label="Mobile leads navigation">
+        <a href="{{ leads_config.host_home_url }}">Main site</a>
+        <a href="/leads">Lead form</a>
+        <a href="/leads/admin">Admin</a>
+      </nav>
+    </details>
   </header>
 
   <main class="smx-shell">
