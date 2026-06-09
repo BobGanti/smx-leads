@@ -124,14 +124,12 @@ def _render_setup_file() -> str:
     return '''from __future__ import annotations
 
 from pathlib import Path
-
 from smx_leads import setup_leads as _setup_leads
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-
-def setup_leads(app, *, init_schema: bool = True):
+def setup_leads(smx_app, *, init_schema: bool = True):
     """
     Initialize smx-leads for this client project.
 
@@ -139,18 +137,15 @@ def setup_leads(app, *, init_schema: bool = True):
     smx-leads will not overwrite it.
     """
     return _setup_leads(
-        app=app,
+        app=smx_app,
         project_root=PROJECT_ROOT,
         init_schema=init_schema,
     )
 
-
-def register_leads_plugin(app, *, init_schema: bool = True):
-    """
-    Compatibility alias for plugin-style host applications.
-    """
-    return setup_leads(
-        app,
+def register_leads_plugin(smx_app, *, init_schema: bool = True):
+    return _setup_leads(
+        app=smx_app,
+        project_root=PROJECT_ROOT,
         init_schema=init_schema,
     )
 '''
