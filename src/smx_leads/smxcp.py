@@ -10,7 +10,20 @@ ENV_EXAMPLE_FILE_NAME = ".smx_leads_example.env"
 ENV_FILE_NAME = ".smx_leads.env"
 DEPLOY_ENV_EXAMPLE_FILE_NAME = ".smx_leads.deploy_example.env"
 DATA_DIR_NAME = "data"
+ASSETS_DIR_NAME = "assets"
 DEV_DB_FILE_NAME = "smx_leads_dev.db"
+
+
+FALLBACK_PNG_BYTES = (
+    b"\x89PNG\r\n\x1a\n"
+    b"\x00\x00\x00\rIHDR"
+    b"\x00\x00\x00\x01\x00\x00\x00\x01"
+    b"\x08\x06\x00\x00\x00"
+    b"\x1f\x15\xc4\x89"
+    b"\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01"
+    b"\r\n-\xb4"
+    b"\x00\x00\x00\x00IEND\xaeB`\x82"
+)
 
 
 @dataclass(frozen=True)
@@ -18,11 +31,14 @@ class SmxLeadsScaffold:
     project_root: Path
     scaffold_dir: Path
     data_dir: Path
+    assets_dir: Path
     setup_file: Path
     env_example_file: Path
     env_file: Path
     deploy_env_example_file: Path
     db_file: Path
+    logo_file: Path
+    favicon_file: Path
 
 
 def ensure_leads_scaffold(
@@ -38,7 +54,10 @@ def ensure_leads_scaffold(
 
     scaffold_dir = root / SCAFFOLD_DIR_NAME
     data_dir = scaffold_dir / DATA_DIR_NAME
+    assets_dir = scaffold_dir / ASSETS_DIR_NAME
     db_file = data_dir / DEV_DB_FILE_NAME
+    logo_file = assets_dir / "logo.png"
+    favicon_file = assets_dir / "favicon.png"
 
     init_file = scaffold_dir / "__init__.py"
     setup_file = scaffold_dir / SETUP_FILE_NAME
@@ -48,22 +67,28 @@ def ensure_leads_scaffold(
 
     scaffold_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
+    assets_dir.mkdir(parents=True, exist_ok=True)
 
     _write_if_missing(init_file, "")
     _write_if_missing(setup_file, _render_setup_file())
     _write_if_missing(env_example_file, _render_env_example_file())
     _write_if_missing(env_file, _render_runtime_env_file(db_file=db_file))
     _write_if_missing(deploy_env_example_file, _render_deploy_env_example_file())
+    _write_bytes_if_missing(logo_file, FALLBACK_PNG_BYTES)
+    _write_bytes_if_missing(favicon_file, FALLBACK_PNG_BYTES)
 
     return SmxLeadsScaffold(
         project_root=root,
         scaffold_dir=scaffold_dir,
         data_dir=data_dir,
+        assets_dir=assets_dir,
         setup_file=setup_file,
         env_example_file=env_example_file,
         env_file=env_file,
         deploy_env_example_file=deploy_env_example_file,
         db_file=db_file,
+        logo_file=logo_file,
+        favicon_file=favicon_file,
     )
 
 
@@ -72,6 +97,13 @@ def _write_if_missing(path: Path, content: str) -> None:
         return
 
     path.write_text(content, encoding="utf-8")
+
+
+def _write_bytes_if_missing(path: Path, content: bytes) -> None:
+    if path.exists():
+        return
+
+    path.write_bytes(content)
 
 
 def _sqlite_url_for(path: Path) -> str:
@@ -135,6 +167,9 @@ SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
+SMX_LEADS_ASSETS_DIR=./leads/assets
+SMX_LEADS_LOGO_URL=/leads/assets/logo.png
+SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 '''
 
 
@@ -156,6 +191,9 @@ SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
+SMX_LEADS_ASSETS_DIR=./leads/assets
+SMX_LEADS_LOGO_URL=/leads/assets/logo.png
+SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 '''
 
 
@@ -188,6 +226,9 @@ SMX_LEADS_HOST_HOME_URL=https://your-domain.com
 SMX_LEADS_MODULE_TITLE=Leads
 
 SMX_LEADS_DATABASE_URL=postgresql+psycopg://user:password@host:5432/database
+SMX_LEADS_ASSETS_DIR=/app/leads/assets
+SMX_LEADS_LOGO_URL=/leads/assets/logo.png
+SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 SMX_LEADS_AUTO_INIT=1
 
 

@@ -11,6 +11,9 @@ def test_config_defaults_are_safe():
     assert config.module_title == "Leads"
     assert config.host_home_url == "/"
     assert config.email_provider == "none"
+    assert config.assets_dir == "./leads/assets"
+    assert config.logo_url == "/leads/assets/logo.png"
+    assert config.favicon_url == "/leads/assets/favicon.png"
     assert config.smtp_use_tls is True
 
 
@@ -25,6 +28,9 @@ def test_config_can_be_supplied_from_mapping():
             "module_title": "Client Leads",
             "public_base_url": "https://client.example.com",
             "auto_init": True,
+            "assets_dir": "./custom-assets",
+            "logo_url": "/custom/logo.png",
+            "favicon_url": "/custom/favicon.png",
             "email_provider": "smtp",
             "smtp_port": "587",
             "smtp_use_tls": "1",
@@ -39,6 +45,9 @@ def test_config_can_be_supplied_from_mapping():
     assert config.module_title == "Client Leads"
     assert config.public_base_url == "https://client.example.com"
     assert config.auto_init is True
+    assert config.assets_dir == "./custom-assets"
+    assert config.logo_url == "/custom/logo.png"
+    assert config.favicon_url == "/custom/favicon.png"
     assert config.email_provider == "smtp"
     assert config.smtp_port == 587
     assert config.smtp_use_tls is True
@@ -59,6 +68,9 @@ def test_config_can_be_loaded_from_env_file(tmp_path):
                 "SMX_LEADS_MODULE_TITLE=Client Leads",
                 "SMX_LEADS_PUBLIC_BASE_URL=https://client.example.com",
                 "SMX_LEADS_AUTO_INIT=1",
+                "SMX_LEADS_ASSETS_DIR=./client-assets",
+                "SMX_LEADS_LOGO_URL=/leads/assets/logo.png",
+                "SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png",
                 "SMX_LEADS_EMAIL_PROVIDER=smtp",
                 "SMX_LEADS_SMTP_PORT=587",
                 "SMX_LEADS_SMTP_USE_TLS=1",
@@ -79,5 +91,8 @@ def test_config_can_be_loaded_from_env_file(tmp_path):
     assert values["module_title"] == "Client Leads"
     assert values["public_base_url"] == "https://client.example.com"
     assert values["auto_init"] is True
+    assert values["assets_dir"] == "./client-assets"
+    assert values["logo_url"] == "/leads/assets/logo.png"
+    assert values["favicon_url"] == "/leads/assets/favicon.png"
     assert values["smtp_port"] == 587
     assert config.notify_to_email == "admin@example.com"

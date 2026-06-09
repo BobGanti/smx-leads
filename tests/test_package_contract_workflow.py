@@ -14,14 +14,20 @@ def test_scaffold_creates_client_owned_leads_folder(tmp_path):
 
     assert scaffold.scaffold_dir == tmp_path / "leads"
     assert scaffold.data_dir == tmp_path / "leads" / "data"
+    assert scaffold.assets_dir == tmp_path / "leads" / "assets"
     assert scaffold.db_file == tmp_path / "leads" / "data" / "smx_leads_dev.db"
     assert scaffold.deploy_env_example_file == tmp_path / "leads" / ".smx_leads.deploy_example.env"
+    assert scaffold.logo_file == tmp_path / "leads" / "assets" / "logo.png"
+    assert scaffold.favicon_file == tmp_path / "leads" / "assets" / "favicon.png"
 
     assert (tmp_path / "leads" / "__init__.py").is_file()
     assert (tmp_path / "leads" / "smx_leads_setup.py").is_file()
     assert (tmp_path / "leads" / ".smx_leads.env").is_file()
     assert (tmp_path / "leads" / ".smx_leads_example.env").is_file()
     assert (tmp_path / "leads" / ".smx_leads.deploy_example.env").is_file()
+    assert (tmp_path / "leads" / "assets").is_dir()
+    assert (tmp_path / "leads" / "assets" / "logo.png").is_file()
+    assert (tmp_path / "leads" / "assets" / "favicon.png").is_file()
 
     setup_text = (tmp_path / "leads" / "smx_leads_setup.py").read_text(
         encoding="utf-8"
@@ -39,6 +45,9 @@ def test_scaffold_creates_client_owned_leads_folder(tmp_path):
 
     assert "SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///" in env_text
     assert "SMX_LEADS_ADMIN_TOKEN=local-leads-admin-token" in env_text
+    assert "SMX_LEADS_ASSETS_DIR=./leads/assets" in env_text
+    assert "SMX_LEADS_LOGO_URL=/leads/assets/logo.png" in env_text
+    assert "SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png" in env_text
 
     assert "SMX_LEADS_PUBLIC_BASE_URL=https://your-domain.com" in deploy_text
     assert "SMX_LEADS_ADMIN_TOKEN=leads-admin-token-vault:latest" in deploy_text

@@ -16,6 +16,9 @@ class LeadsConfig:
     host_home_url: str = "/"
     module_title: str = "Leads"
     public_base_url: str | None = None
+    assets_dir: str = "./leads/assets"
+    logo_url: str = "/leads/assets/logo.png"
+    favicon_url: str = "/leads/assets/favicon.png"
 
     auto_init: bool = False
 
@@ -44,6 +47,9 @@ class LeadsConfig:
             host_home_url=str(values.get("host_home_url") or os.getenv("SMX_LEADS_HOST_HOME_URL") or "/"),
             module_title=str(values.get("module_title") or os.getenv("SMX_LEADS_MODULE_TITLE") or "Leads"),
             public_base_url=values.get("public_base_url") or os.getenv("SMX_LEADS_PUBLIC_BASE_URL") or None,
+            assets_dir=str(values.get("assets_dir") or os.getenv("SMX_LEADS_ASSETS_DIR") or "./leads/assets"),
+            logo_url=str(values.get("logo_url") or os.getenv("SMX_LEADS_LOGO_URL") or "/leads/assets/logo.png"),
+            favicon_url=str(values.get("favicon_url") or os.getenv("SMX_LEADS_FAVICON_URL") or "/leads/assets/favicon.png"),
             auto_init=bool(values.get("auto_init", False)),
             email_provider=str(values.get("email_provider") or os.getenv("SMX_LEADS_EMAIL_PROVIDER") or "none"),
             smtp_host=values.get("smtp_host") or os.getenv("SMX_LEADS_SMTP_HOST") or None,
@@ -64,6 +70,9 @@ ENV_TO_CONFIG = {
     "HOST_HOME_URL": "host_home_url",
     "MODULE_TITLE": "module_title",
     "PUBLIC_BASE_URL": "public_base_url",
+    "ASSETS_DIR": "assets_dir",
+    "LOGO_URL": "logo_url",
+    "FAVICON_URL": "favicon_url",
     "AUTO_INIT": "auto_init",
     "EMAIL_PROVIDER": "email_provider",
     "SMTP_HOST": "smtp_host",
