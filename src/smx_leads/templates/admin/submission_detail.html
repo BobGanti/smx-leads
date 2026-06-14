@@ -84,6 +84,16 @@
           <p><strong>Suggested status:</strong> {{ ai_insight.suggested_status }}</p>
           <p><strong>Spam risk:</strong> {{ ai_insight.spam_risk }}</p>
 
+          {% set usage = ai_insight.raw.get("usage", {}) if ai_insight.raw else {} %}
+          {% if usage %}
+            <h3>AI usage</h3>
+            <p><strong>Provider:</strong> {{ usage.get("provider", "") }}</p>
+            <p><strong>Model:</strong> {{ usage.get("model", ai_insight.model_name or "") }}</p>
+            <p><strong>Input tokens:</strong> {{ usage.get("input_tokens", 0) }}</p>
+            <p><strong>Output tokens:</strong> {{ usage.get("output_tokens", 0) }}</p>
+            <p><strong>Total tokens:</strong> {{ usage.get("total_tokens", 0) }}</p>
+          {% endif %}
+
           <h3>Recommended action</h3>
           <p>{{ ai_insight.recommended_action }}</p>
 

@@ -18,6 +18,14 @@ class FakeLeadAIClient:
             "draft_reply": "Hi Bob, thanks for your interest. We can arrange a demo.",
             "spam_risk": "low",
             "model_name": "host-model",
+            "usage": {
+                "provider": "xai",
+                "model": "grok-test",
+                "input_tokens": 11,
+                "output_tokens": 7,
+                "total_tokens": 18,
+                "raw": {},
+            },
         }
 
 
@@ -117,6 +125,13 @@ def test_admin_ai_analyze_persists_insight_and_redirects():
     assert "high" in html
     assert "Offer demo slots within 24 hours." in html
     assert "Hi Bob, thanks for your interest" in html
+    assert "AI usage" in html
+    assert "Input tokens:" in html
+    assert "11" in html
+    assert "Output tokens:" in html
+    assert "7" in html
+    assert "Total tokens:" in html
+    assert "18" in html
 
 
 def test_admin_ai_analyze_json_response():
@@ -137,6 +152,9 @@ def test_admin_ai_analyze_json_response():
     assert payload["ai_insight"]["summary"] == "Bob wants a demo for the AI platform."
     assert payload["ai_insight"]["category"] == "demo_request"
     assert payload["ai_insight"]["priority"] == "high"
+    assert payload["ai_insight"]["usage"]["input_tokens"] == 11
+    assert payload["ai_insight"]["usage"]["output_tokens"] == 7
+    assert payload["ai_insight"]["usage"]["total_tokens"] == 18
 
 
 def test_admin_ai_analyze_accepts_host_built_ai_profile():

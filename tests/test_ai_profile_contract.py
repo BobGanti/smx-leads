@@ -39,7 +39,16 @@ class FakeOpenAICompatibleClient:
             },
         )()
         choice = type("Choice", (), {"message": message})()
-        return type("Response", (), {"choices": [choice]})()
+        usage = type(
+            "Usage",
+            (),
+            {
+                "input_tokens": 11,
+                "output_tokens": 7,
+                "total_tokens": 18,
+            },
+        )()
+        return type("Response", (), {"choices": [choice], "usage": usage})()
 
 
 def test_build_lead_ai_client_accepts_legacy_host_client():
@@ -69,6 +78,12 @@ def test_build_lead_ai_client_accepts_single_provider_profile():
 
     assert result["summary"] == "OpenAI-compatible insight."
     assert result["category"] == "sales"
+    assert result["model_name"] == "grok-test"
+    assert result["usage"]["provider"] == "xai"
+    assert result["usage"]["model"] == "grok-test"
+    assert result["usage"]["input_tokens"] == 11
+    assert result["usage"]["output_tokens"] == 7
+    assert result["usage"]["total_tokens"] == 18
     assert provider_client.calls[0]["model"] == "grok-test"
     assert provider_client.calls[0]["response_format"] == {"type": "json_object"}
 

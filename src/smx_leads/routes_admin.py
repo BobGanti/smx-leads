@@ -356,6 +356,7 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime, *, ai_client=None) -> Bl
                         "priority": stored.priority,
                         "suggested_status": stored.suggested_status,
                         "spam_risk": stored.spam_risk,
+                        "usage": dict(stored.raw.get("usage", {}) or {}),
                     },
                 }
             ), 201

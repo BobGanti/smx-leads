@@ -50,19 +50,26 @@ class LeadAIProfileClient:
 
     def generate_lead_insight(self, *, prompt: str) -> dict[str, Any]:
         if hasattr(self.client, "generate_lead_insight"):
-            return dict(self.client.generate_lead_insight(prompt=prompt))
+            data = dict(self.client.generate_lead_insight(prompt=prompt))
+            data.setdefault("model_name", self.model)
+            data.setdefault("usage", _empty_usage(provider=self.provider, model=self.model))
+            return data
 
         if self.provider == "google":
-            return _parse_response_text(_call_google(self.client, model=self.model, prompt=prompt))
+            response = _call_google(self.client, model=self.model, prompt=prompt)
+            return _parse_response(response, provider=self.provider, model=self.model)
 
         if self.provider == "openai":
-            return _parse_response_text(_call_openai_responses(self.client, model=self.model, prompt=prompt))
+            response = _call_openai_responses(self.client, model=self.model, prompt=prompt)
+            return _parse_response(response, provider=self.provider, model=self.model)
 
         if self.provider == "anthropic":
-            return _parse_response_text(_call_anthropic_messages(self.client, model=self.model, prompt=prompt))
+            response = _call_anthropic_messages(self.client, model=self.model, prompt=prompt)
+            return _parse_response(response, provider=self.provider, model=self.model)
 
         if self.provider in OPENAI_COMPATIBLE_CHAT_PROVIDERS:
-            return _parse_response_text(_call_openai_compatible_chat(self.client, model=self.model, prompt=prompt))
+            response = _call_openai_compatible_chat(self.client, model=self.model, prompt=prompt)
+            return _parse_response(response, provider=self.provider, model=self.model)
 
         raise ValueError(f"unsupported leads AI provider: {self.provider}")
 
@@ -136,14 +143,14 @@ def _call_google(client: Any, *, model: str, prompt: str) -> str:
             model=model,
             contents=prompt,
         )
-        return _extract_text(response)
+        return response
 
     if hasattr(client, "generate_content"):
         response = client.generate_content(
             model=model,
             contents=prompt,
         )
-        return _extract_text(response)
+        return response
 
     raise ValueError("google leads ai_profile client does not support content generation")
 
@@ -158,7 +165,7 @@ def _call_openai_responses(client: Any, *, model: str, prompt: str) -> str:
     if output_text:
         return str(output_text)
 
-    return _extract_text(response)
+    return response
 
 
 def _call_anthropic_messages(client: Any, *, model: str, prompt: str) -> str:
@@ -173,7 +180,7 @@ def _call_anthropic_messages(client: Any, *, model: str, prompt: str) -> str:
         ],
     )
 
-    return _extract_text(response)
+    return response
 
 
 def _call_openai_compatible_chat(client: Any, *, model: str, prompt: str) -> str:
@@ -188,7 +195,7 @@ def _call_openai_compatible_chat(client: Any, *, model: str, prompt: str) -> str
         response_format={"type": "json_object"},
     )
 
-    return _extract_text(response)
+    return response
 
 
 def _extract_text(response: Any) -> str:
@@ -230,6 +237,13 @@ def _extract_text(response: Any) -> str:
     return str(response)
 
 
+def _parse_response(response: Any, *, provider: str, model: str) -> dict[str, Any]:
+    parsed = _parse_response_text(_extract_text(response))
+    parsed.setdefault("model_name", model)
+    parsed["usage"] = _extract_usage(response, provider=provider, model=model)
+    return parsed
+
+
 def _parse_response_text(text: str) -> dict[str, Any]:
     value = text.strip()
 
@@ -247,3 +261,66 @@ def _parse_response_text(text: str) -> dict[str, Any]:
         return {"summary": value}
 
     return parsed
+
+
+def _extract_usage(response: Any, *, provider: str, model: str) -> dict[str, Any]:
+    if provider == "google":
+        usage = getattr(response, "usage_metadata", None)
+        input_tokens = _coerce_int(getattr(usage, "prompt_token_count", 0))
+        output_tokens = _coerce_int(getattr(usage, "candidates_token_count", 0))
+        total_tokens = _coerce_int(getattr(usage, "total_token_count", 0))
+        raw = {
+            "prompt_token_count": input_tokens,
+            "candidates_token_count": output_tokens,
+            "total_token_count": total_tokens,
+        }
+    else:
+        usage = getattr(response, "usage", None)
+        input_tokens = _coerce_int(_get_usage_value(usage, "input_tokens"))
+        output_tokens = _coerce_int(_get_usage_value(usage, "output_tokens"))
+        total_tokens = _coerce_int(_get_usage_value(usage, "total_tokens"))
+        raw = {
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": total_tokens,
+        }
+
+    if total_tokens <= 0:
+        total_tokens = input_tokens + output_tokens
+
+    return {
+        "provider": provider,
+        "model": model,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "total_tokens": total_tokens,
+        "raw": raw,
+    }
+
+
+def _empty_usage(*, provider: str, model: str) -> dict[str, Any]:
+    return {
+        "provider": provider,
+        "model": model,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "raw": {},
+    }
+
+
+def _get_usage_value(usage: Any, key: str) -> Any:
+    if usage is None:
+        return 0
+
+    if isinstance(usage, dict):
+        return usage.get(key, 0)
+
+    return getattr(usage, key, 0)
+
+
+def _coerce_int(value: Any) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
