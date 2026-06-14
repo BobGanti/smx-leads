@@ -43,8 +43,8 @@ class FakeOpenAICompatibleClient:
             "Usage",
             (),
             {
-                "input_tokens": 11,
-                "output_tokens": 7,
+                "prompt_tokens": 11,
+                "completion_tokens": 7,
                 "total_tokens": 18,
             },
         )()
@@ -88,6 +88,7 @@ def test_build_lead_ai_client_accepts_single_provider_profile():
     assert result["usage"]["total_tokens"] == 18
     assert provider_client.calls[0]["model"] == "grok-test"
     assert provider_client.calls[0]["response_format"] == {"type": "json_object"}
+    assert "Agent name: leads_final_insight" in provider_client.calls[0]["messages"][-1]["content"]
 
 
 def test_build_lead_ai_client_accepts_labeled_main_assistant_profile():
@@ -114,7 +115,7 @@ def test_build_lead_ai_client_accepts_labeled_main_assistant_profile():
     assert result["summary"] == "OpenAI-compatible insight."
     assert assistant_client.calls[0]["model"] == "qwen-assistant"
     assert main_client.calls[0]["model"] == "grok-main"
-    assert "Assistant pre-analysis context" in main_client.calls[0]["messages"][-1]["content"]
+    assert "assistant_context" in main_client.calls[0]["messages"][-1]["content"]
     assert result["usage"]["provider"] == "combined"
     assert result["usage"]["model"] == "main+assistant"
     assert result["usage"]["input_tokens"] == 22
@@ -122,6 +123,7 @@ def test_build_lead_ai_client_accepts_labeled_main_assistant_profile():
     assert result["usage"]["total_tokens"] == 36
     assert result["usage_by_profile"]["main"]["model"] == "grok-main"
     assert result["usage_by_profile"]["assistant"]["model"] == "qwen-assistant"
+    assert result["usage_by_profile"]["assistant"]["provider"] == "alibaba"
 
 
 def test_labeled_profile_does_not_require_assistant_none():
@@ -144,7 +146,7 @@ def test_labeled_profile_does_not_require_assistant_none():
 
 
 def test_unsupported_provider_is_rejected():
-    with pytest.raises(ValueError, match="unsupported leads AI provider"):
+    with pytest.raises(ValueError, match="Unsupported leads AI provider"):
         build_lead_ai_client_from_profile(
             {
                 "provider": "grok",
