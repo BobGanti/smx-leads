@@ -91,7 +91,14 @@
             <p><strong>Model:</strong> {{ usage.get("model", ai_insight.model_name or "") }}</p>
             <p><strong>Input tokens:</strong> {{ usage.get("input_tokens", 0) }}</p>
             <p><strong>Output tokens:</strong> {{ usage.get("output_tokens", 0) }}</p>
-            <p><strong>Total tokens:</strong> {{ usage.get("total_tokens", 0) }}</p>
+            {% set hidden_tokens = usage.get("thinking_tokens", 0) + usage.get("other_tokens", 0) %}
+            {% if hidden_tokens %}
+              <p><strong>Thinking/other tokens:</strong> {{ hidden_tokens }}</p>
+            {% endif %}
+            <p><strong>Total billable/model tokens:</strong> {{ usage.get("total_tokens", 0) }}</p>
+            {% if hidden_tokens %}
+              <p><small>Total includes input, visible output, and model thinking/other tokens.</small></p>
+            {% endif %}
           {% endif %}
 
           <h3>Recommended action</h3>

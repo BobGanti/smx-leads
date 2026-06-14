@@ -83,6 +83,8 @@ def test_build_lead_ai_client_accepts_single_provider_profile():
     assert result["usage"]["model"] == "grok-test"
     assert result["usage"]["input_tokens"] == 11
     assert result["usage"]["output_tokens"] == 7
+    assert result["usage"]["thinking_tokens"] == 0
+    assert result["usage"]["other_tokens"] == 0
     assert result["usage"]["total_tokens"] == 18
     assert provider_client.calls[0]["model"] == "grok-test"
     assert provider_client.calls[0]["response_format"] == {"type": "json_object"}

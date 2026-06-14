@@ -268,31 +268,39 @@ def _extract_usage(response: Any, *, provider: str, model: str) -> dict[str, Any
         usage = getattr(response, "usage_metadata", None)
         input_tokens = _coerce_int(getattr(usage, "prompt_token_count", 0))
         output_tokens = _coerce_int(getattr(usage, "candidates_token_count", 0))
+        thinking_tokens = _coerce_int(getattr(usage, "thoughts_token_count", 0))
         total_tokens = _coerce_int(getattr(usage, "total_token_count", 0))
         raw = {
             "prompt_token_count": input_tokens,
             "candidates_token_count": output_tokens,
+            "thoughts_token_count": thinking_tokens,
             "total_token_count": total_tokens,
         }
     else:
         usage = getattr(response, "usage", None)
         input_tokens = _coerce_int(_get_usage_value(usage, "input_tokens"))
         output_tokens = _coerce_int(_get_usage_value(usage, "output_tokens"))
+        thinking_tokens = _coerce_int(_get_usage_value(usage, "thinking_tokens"))
         total_tokens = _coerce_int(_get_usage_value(usage, "total_tokens"))
         raw = {
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
+            "thinking_tokens": thinking_tokens,
             "total_tokens": total_tokens,
         }
 
     if total_tokens <= 0:
-        total_tokens = input_tokens + output_tokens
+        total_tokens = input_tokens + output_tokens + thinking_tokens
+
+    other_tokens = max(total_tokens - input_tokens - output_tokens - thinking_tokens, 0)
 
     return {
         "provider": provider,
         "model": model,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
+        "thinking_tokens": thinking_tokens,
+        "other_tokens": other_tokens,
         "total_tokens": total_tokens,
         "raw": raw,
     }
@@ -304,6 +312,8 @@ def _empty_usage(*, provider: str, model: str) -> dict[str, Any]:
         "model": model,
         "input_tokens": 0,
         "output_tokens": 0,
+        "thinking_tokens": 0,
+        "other_tokens": 0,
         "total_tokens": 0,
         "raw": {},
     }

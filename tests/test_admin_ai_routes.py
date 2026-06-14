@@ -23,7 +23,9 @@ class FakeLeadAIClient:
                 "model": "grok-test",
                 "input_tokens": 11,
                 "output_tokens": 7,
-                "total_tokens": 18,
+                "thinking_tokens": 5,
+                "other_tokens": 0,
+                "total_tokens": 23,
                 "raw": {},
             },
         }
@@ -130,8 +132,10 @@ def test_admin_ai_analyze_persists_insight_and_redirects():
     assert "11" in html
     assert "Output tokens:" in html
     assert "7" in html
-    assert "Total tokens:" in html
-    assert "18" in html
+    assert "Thinking/other tokens:" in html
+    assert "5" in html
+    assert "Total billable/model tokens:" in html
+    assert "23" in html
 
 
 def test_admin_ai_analyze_json_response():
@@ -154,7 +158,9 @@ def test_admin_ai_analyze_json_response():
     assert payload["ai_insight"]["priority"] == "high"
     assert payload["ai_insight"]["usage"]["input_tokens"] == 11
     assert payload["ai_insight"]["usage"]["output_tokens"] == 7
-    assert payload["ai_insight"]["usage"]["total_tokens"] == 18
+    assert payload["ai_insight"]["usage"]["thinking_tokens"] == 5
+    assert payload["ai_insight"]["usage"]["other_tokens"] == 0
+    assert payload["ai_insight"]["usage"]["total_tokens"] == 23
 
 
 def test_admin_ai_analyze_accepts_host_built_ai_profile():
