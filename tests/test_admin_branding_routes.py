@@ -69,8 +69,8 @@ def test_admin_branding_upload_replaces_logo_and_favicon(tmp_path):
     assert response.status_code == 200
     assert "Branding assets updated" in response.get_data(as_text=True)
 
-    assert (tmp_path / "leads" / "assets" / "logo.png").read_bytes() == PNG_BYTES
-    assert (tmp_path / "leads" / "assets" / "favicon.png").read_bytes() == PNG_BYTES
+    assert (tmp_path / "plugins" / "leads" / "assets" / "logo.png").read_bytes() == PNG_BYTES
+    assert (tmp_path / "plugins" / "leads" / "assets" / "favicon.png").read_bytes() == PNG_BYTES
 
 
 def test_admin_branding_upload_rejects_non_png(tmp_path):

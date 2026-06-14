@@ -11,7 +11,7 @@ def test_config_defaults_are_safe():
     assert config.module_title == "Leads"
     assert config.host_home_url == "/"
     assert config.email_provider == "none"
-    assert config.assets_dir == "./leads/assets"
+    assert config.assets_dir == "./plugins/leads/assets"
     assert config.logo_url == "/leads/assets/logo.png"
     assert config.favicon_url == "/leads/assets/favicon.png"
     assert config.smtp_use_tls is True

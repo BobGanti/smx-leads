@@ -16,7 +16,7 @@ class LeadsConfig:
     host_home_url: str = "/"
     module_title: str = "Leads"
     public_base_url: str | None = None
-    assets_dir: str = "./leads/assets"
+    assets_dir: str = "./plugins/leads/assets"
     logo_url: str = "/leads/assets/logo.png"
     favicon_url: str = "/leads/assets/favicon.png"
 
@@ -39,7 +39,7 @@ class LeadsConfig:
             database_url=str(
                 values.get("database_url")
                 or os.getenv("SMX_LEADS_DATABASE_URL")
-                or "sqlite+pysqlite:///./leads/data/smx_leads_dev.db"
+                or "sqlite+pysqlite:///./plugins/leads/data/smx_leads_dev.db"
             ),
             admin_token=values.get("admin_token") or os.getenv("SMX_LEADS_ADMIN_TOKEN") or None,
             flask_secret_key=values.get("flask_secret_key") or os.getenv("SMX_LEADS_FLASK_SECRET_KEY") or None,
@@ -47,7 +47,7 @@ class LeadsConfig:
             host_home_url=str(values.get("host_home_url") or os.getenv("SMX_LEADS_HOST_HOME_URL") or "/"),
             module_title=str(values.get("module_title") or os.getenv("SMX_LEADS_MODULE_TITLE") or "Leads"),
             public_base_url=values.get("public_base_url") or os.getenv("SMX_LEADS_PUBLIC_BASE_URL") or None,
-            assets_dir=str(values.get("assets_dir") or os.getenv("SMX_LEADS_ASSETS_DIR") or "./leads/assets"),
+            assets_dir=str(values.get("assets_dir") or os.getenv("SMX_LEADS_ASSETS_DIR") or "./plugins/leads/assets"),
             logo_url=str(values.get("logo_url") or os.getenv("SMX_LEADS_LOGO_URL") or "/leads/assets/logo.png"),
             favicon_url=str(values.get("favicon_url") or os.getenv("SMX_LEADS_FAVICON_URL") or "/leads/assets/favicon.png"),
             auto_init=bool(values.get("auto_init", False)),
@@ -124,7 +124,7 @@ def load_env_file(env_file: str | os.PathLike[str] | None) -> dict[str, str]:
 
 def build_leads_config_from_env(
     *,
-    env_file: str | os.PathLike[str] | None = "leads/.smx_leads.env",
+    env_file: str | os.PathLike[str] | None = "plugins/leads/.smx_leads.env",
     prefix: str = "SMX_LEADS_",
 ) -> dict[str, Any]:
     file_values = load_env_file(env_file)

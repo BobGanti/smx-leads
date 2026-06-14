@@ -55,7 +55,7 @@ def init_leads(app, *, config=None, init_schema: bool = False, ai_client=None):
 def init_leads_from_env(
     app,
     *,
-    env_file: str = "leads/.smx_leads.env",
+    env_file: str = "plugins/leads/.smx_leads.env",
     init_schema: bool = False,
     ai_client=None,
 ):
