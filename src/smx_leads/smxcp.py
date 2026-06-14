@@ -5,6 +5,7 @@ from importlib import resources
 from pathlib import Path
 
 
+PLUGINS_DIR_NAME = "plugins"
 SCAFFOLD_DIR_NAME = "leads"
 SETUP_FILE_NAME = "smx_leads_setup.py"
 ENV_EXAMPLE_FILE_NAME = ".smx_leads_example.env"
@@ -54,7 +55,8 @@ def ensure_leads_scaffold(
     """
     root = Path(project_root or Path.cwd()).resolve()
 
-    scaffold_dir = root / SCAFFOLD_DIR_NAME
+    plugins_dir = root / PLUGINS_DIR_NAME
+    scaffold_dir = plugins_dir / SCAFFOLD_DIR_NAME
     data_dir = scaffold_dir / DATA_DIR_NAME
     assets_dir = scaffold_dir / ASSETS_DIR_NAME
     db_file = data_dir / DEV_DB_FILE_NAME
@@ -127,7 +129,7 @@ from pathlib import Path
 from smx_leads import setup_leads as _setup_leads
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 def setup_leads(smx_app, *, init_schema: bool = True):
     """
@@ -156,7 +158,7 @@ def _render_env_example_file() -> str:
 #
 # Copy this file to:
 #
-#   leads/.smx_leads.env
+#   plugins/leads/.smx_leads.env
 #
 # Then replace placeholder values.
 #
@@ -164,7 +166,7 @@ def _render_env_example_file() -> str:
 #
 #   python -c "import secrets; print(secrets.token_urlsafe(32))"
 
-SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///./leads/data/smx_leads_dev.db
+SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///./plugins/leads/data/smx_leads_dev.db
 SMX_LEADS_ADMIN_TOKEN=replace-with-a-strong-admin-token
 SMX_LEADS_FLASK_SECRET_KEY=replace-with-a-strong-session-secret
 
@@ -172,7 +174,7 @@ SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
-SMX_LEADS_ASSETS_DIR=./leads/assets
+SMX_LEADS_ASSETS_DIR=./plugins/leads/assets
 SMX_LEADS_LOGO_URL=/leads/assets/logo.png
 SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 '''
@@ -211,10 +213,10 @@ def _render_deploy_env_example_file() -> str:
 # - Do not put raw secret values in this file.
 #
 # Local development runtime config:
-#   leads/.smx_leads.env
+#   plugins/leads/.smx_leads.env
 #
 # Production deployment example:
-#   leads/.smx_leads.deploy_example.env
+#   plugins/leads/.smx_leads.deploy_example.env
 #
 # smxCP rule:
 #   one Secret Manager vault -> one SMX_LEADS_* Cloud Run env var
@@ -231,7 +233,7 @@ SMX_LEADS_HOST_HOME_URL=https://your-domain.com
 SMX_LEADS_MODULE_TITLE=Leads
 
 SMX_LEADS_DATABASE_URL=postgresql+psycopg://user:password@host:5432/database
-SMX_LEADS_ASSETS_DIR=/app/leads/assets
+SMX_LEADS_ASSETS_DIR=/app/plugins/leads/assets
 SMX_LEADS_LOGO_URL=/leads/assets/logo.png
 SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 SMX_LEADS_AUTO_INIT=1

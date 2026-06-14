@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 
 from flask import Flask
 
@@ -12,36 +12,37 @@ def test_setup_leads_import_contract_exists():
 def test_scaffold_creates_client_owned_leads_folder(tmp_path):
     scaffold = ensure_leads_scaffold(project_root=tmp_path)
 
-    assert scaffold.scaffold_dir == tmp_path / "leads"
-    assert scaffold.data_dir == tmp_path / "leads" / "data"
-    assert scaffold.assets_dir == tmp_path / "leads" / "assets"
-    assert scaffold.db_file == tmp_path / "leads" / "data" / "smx_leads_dev.db"
-    assert scaffold.deploy_env_example_file == tmp_path / "leads" / ".smx_leads.deploy_example.env"
-    assert scaffold.logo_file == tmp_path / "leads" / "assets" / "logo.png"
-    assert scaffold.favicon_file == tmp_path / "leads" / "assets" / "favicon.png"
+    assert scaffold.scaffold_dir == tmp_path / "plugins" / "leads"
+    assert scaffold.data_dir == tmp_path / "plugins" / "leads" / "data"
+    assert scaffold.assets_dir == tmp_path / "plugins" / "leads" / "assets"
+    assert scaffold.db_file == tmp_path / "plugins" / "leads" / "data" / "smx_leads_dev.db"
+    assert scaffold.deploy_env_example_file == tmp_path / "plugins" / "leads" / ".smx_leads.deploy_example.env"
+    assert scaffold.logo_file == tmp_path / "plugins" / "leads" / "assets" / "logo.png"
+    assert scaffold.favicon_file == tmp_path / "plugins" / "leads" / "assets" / "favicon.png"
 
-    assert (tmp_path / "leads" / "__init__.py").is_file()
-    assert (tmp_path / "leads" / "smx_leads_setup.py").is_file()
-    assert (tmp_path / "leads" / ".smx_leads.env").is_file()
-    assert (tmp_path / "leads" / ".smx_leads_example.env").is_file()
-    assert (tmp_path / "leads" / ".smx_leads.deploy_example.env").is_file()
-    assert (tmp_path / "leads" / "assets").is_dir()
-    assert (tmp_path / "leads" / "assets" / "logo.png").is_file()
-    assert (tmp_path / "leads" / "assets" / "favicon.png").is_file()
+    assert (tmp_path / "plugins" / "leads" / "__init__.py").is_file()
+    assert (tmp_path / "plugins" / "leads" / "smx_leads_setup.py").is_file()
+    assert (tmp_path / "plugins" / "leads" / ".smx_leads.env").is_file()
+    assert (tmp_path / "plugins" / "leads" / ".smx_leads_example.env").is_file()
+    assert (tmp_path / "plugins" / "leads" / ".smx_leads.deploy_example.env").is_file()
+    assert (tmp_path / "plugins" / "leads" / "assets").is_dir()
+    assert (tmp_path / "plugins" / "leads" / "assets" / "logo.png").is_file()
+    assert (tmp_path / "plugins" / "leads" / "assets" / "favicon.png").is_file()
 
-    setup_text = (tmp_path / "leads" / "smx_leads_setup.py").read_text(
+    setup_text = (tmp_path / "plugins" / "leads" / "smx_leads_setup.py").read_text(
         encoding="utf-8"
     )
-    env_text = (tmp_path / "leads" / ".smx_leads.env").read_text(
+    env_text = (tmp_path / "plugins" / "leads" / ".smx_leads.env").read_text(
         encoding="utf-8"
     )
-    deploy_text = (tmp_path / "leads" / ".smx_leads.deploy_example.env").read_text(
+    deploy_text = (tmp_path / "plugins" / "leads" / ".smx_leads.deploy_example.env").read_text(
         encoding="utf-8"
     )
 
     assert "from smx_leads import setup_leads as _setup_leads" in setup_text
     assert "def setup_leads" in setup_text
     assert "def register_leads_plugin" in setup_text
+    assert "PROJECT_ROOT = Path(__file__).resolve().parents[2]" in setup_text
 
     assert "SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///" in env_text
     assert "SMX_LEADS_ADMIN_TOKEN=local-leads-admin-token" in env_text
@@ -60,7 +61,7 @@ def test_setup_leads_creates_scaffold_and_returns_app(tmp_path):
     result = setup_leads(app, project_root=tmp_path)
 
     assert result is app
-    assert (tmp_path / "leads" / "smx_leads_setup.py").is_file()
+    assert (tmp_path / "plugins" / "leads" / "smx_leads_setup.py").is_file()
 
 
 def test_package_includes_html_templates_for_wheel_distribution():
@@ -79,4 +80,3 @@ def test_package_has_default_branding_assets():
     assert favicon.is_file()
     assert logo.read_bytes().startswith(b"\x89PNG")
     assert favicon.read_bytes().startswith(b"\x89PNG")
-
