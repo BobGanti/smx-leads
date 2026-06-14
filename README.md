@@ -164,20 +164,20 @@ There are no loose admin routes such as `/admin`, `/submissions`, or `/branding`
 The local scaffold writes:
 
 ```text
-leads/.smx_leads.env
+plugins/leads/.smx_leads.env
 ```
 
 Important local defaults:
 
 ```text
-SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///.../leads/data/smx_leads_dev.db
+SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///.../plugins/leads/data/smx_leads_dev.db
 SMX_LEADS_ADMIN_TOKEN=local-leads-admin-token
 SMX_LEADS_FLASK_SECRET_KEY=replace-with-a-strong-session-secret
 SMX_LEADS_HOST_SITE_TITLE=SyntaxMatrix
 SMX_LEADS_HOST_HOME_URL=/
 SMX_LEADS_MODULE_TITLE=Leads
 SMX_LEADS_PUBLIC_BASE_URL=http://localhost:5055
-SMX_LEADS_ASSETS_DIR=<resolved-client-project-path>/leads/assets
+SMX_LEADS_ASSETS_DIR=<resolved-client-project-path>/plugins/leads/assets
 SMX_LEADS_LOGO_URL=/leads/assets/logo.png
 SMX_LEADS_FAVICON_URL=/leads/assets/favicon.png
 ```
@@ -237,7 +237,7 @@ src/smx_leads/default_assets/
 During scaffold creation, these are copied into the client project:
 
 ```text
-leads/assets/
+plugins/leads/assets/
   logo.png
   favicon.png
 ```
@@ -485,7 +485,7 @@ setup_leads(
     app,
     project_root=PROJECT_ROOT,
     init_schema=True,
-    ai_client=host_provided_ai_client,
+    ai_profile=AI_PROFILES["google"],
 )
 ```
 
@@ -570,4 +570,3 @@ contacted
 closed
 spam
 ```
-
