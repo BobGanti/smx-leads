@@ -112,8 +112,16 @@ def test_build_lead_ai_client_accepts_labeled_main_assistant_profile():
     result = client.generate_lead_insight(prompt="Analyze this lead.")
 
     assert result["summary"] == "OpenAI-compatible insight."
+    assert assistant_client.calls[0]["model"] == "qwen-assistant"
     assert main_client.calls[0]["model"] == "grok-main"
-    assert assistant_client.calls == []
+    assert "Assistant pre-analysis context" in main_client.calls[0]["messages"][-1]["content"]
+    assert result["usage"]["provider"] == "combined"
+    assert result["usage"]["model"] == "main+assistant"
+    assert result["usage"]["input_tokens"] == 22
+    assert result["usage"]["output_tokens"] == 14
+    assert result["usage"]["total_tokens"] == 36
+    assert result["usage_by_profile"]["main"]["model"] == "grok-main"
+    assert result["usage_by_profile"]["assistant"]["model"] == "qwen-assistant"
 
 
 def test_labeled_profile_does_not_require_assistant_none():

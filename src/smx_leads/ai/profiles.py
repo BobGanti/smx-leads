@@ -78,9 +78,9 @@ class LeadAIRoutingClient:
     """
     Routing wrapper for labeled ai_profile dictionaries.
 
-    Current smx-leads has one lead insight workflow, so it uses the main
-    profile. The assistant profile is accepted and retained for future
-    narrower lead-analysis agents without changing the public host contract.
+    When an assistant profile is provided, smx-leads uses it for a narrow
+    pre-analysis pass, then sends that context to the main profile for the
+    final lead insight. Usage is accumulated across both profiles.
     """
 
     def __init__(
@@ -93,7 +93,77 @@ class LeadAIRoutingClient:
         self.assistant_client = assistant_client
 
     def generate_lead_insight(self, *, prompt: str) -> dict[str, Any]:
-        return self.main_client.generate_lead_insight(prompt=prompt)
+        if self.assistant_client is None:
+            return self.main_client.generate_lead_insight(prompt=prompt)
+
+        assistant_prompt = (
+            "You are the assistant lead-analysis model. "
+            "Extract concise supporting context for the main lead-analysis model. "
+            "Return JSON with summary, category, priority, spam_risk, key_points, and recommended_focus.\n\n"
+            f"{prompt}"
+        )
+        assistant_result = dict(self.assistant_client.generate_lead_insight(prompt=assistant_prompt))
+        assistant_context = _assistant_context_from_result(assistant_result)
+
+        main_prompt = (
+            f"{prompt}\n\n"
+            "Assistant pre-analysis context for support only:\n"
+            f"{json.dumps(assistant_context, ensure_ascii=False)}\n\n"
+            "Use the assistant context only if it is relevant and produce the final lead insight JSON."
+        )
+        main_result = dict(self.main_client.generate_lead_insight(prompt=main_prompt))
+
+        main_usage = dict(main_result.get("usage", {}) or {})
+        assistant_usage = dict(assistant_result.get("usage", {}) or {})
+        main_result["usage_by_profile"] = {
+            "main": main_usage,
+            "assistant": assistant_usage,
+        }
+        main_result["usage"] = _combine_usage_profiles(
+            main_usage=main_usage,
+            assistant_usage=assistant_usage,
+        )
+        return main_result
+
+
+def _assistant_context_from_result(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "summary": result.get("summary", ""),
+        "category": result.get("category", ""),
+        "priority": result.get("priority", ""),
+        "spam_risk": result.get("spam_risk", ""),
+        "recommended_action": result.get("recommended_action", ""),
+        "raw": result.get("raw", {}),
+    }
+
+
+def _combine_usage_profiles(
+    *,
+    main_usage: dict[str, Any],
+    assistant_usage: dict[str, Any],
+) -> dict[str, Any]:
+    input_tokens = _coerce_int(main_usage.get("input_tokens")) + _coerce_int(assistant_usage.get("input_tokens"))
+    output_tokens = _coerce_int(main_usage.get("output_tokens")) + _coerce_int(assistant_usage.get("output_tokens"))
+    thinking_tokens = _coerce_int(main_usage.get("thinking_tokens")) + _coerce_int(assistant_usage.get("thinking_tokens"))
+    other_tokens = _coerce_int(main_usage.get("other_tokens")) + _coerce_int(assistant_usage.get("other_tokens"))
+    total_tokens = _coerce_int(main_usage.get("total_tokens")) + _coerce_int(assistant_usage.get("total_tokens"))
+
+    if total_tokens <= 0:
+        total_tokens = input_tokens + output_tokens + thinking_tokens + other_tokens
+
+    return {
+        "provider": "combined",
+        "model": "main+assistant",
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "thinking_tokens": thinking_tokens,
+        "other_tokens": other_tokens,
+        "total_tokens": total_tokens,
+        "raw": {
+            "main": main_usage,
+            "assistant": assistant_usage,
+        },
+    }
 
 
 def build_lead_ai_client_from_profile(profile: Any) -> LeadAIClient | None:
