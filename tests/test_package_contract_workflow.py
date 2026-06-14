@@ -42,7 +42,9 @@ def test_scaffold_creates_client_owned_leads_folder(tmp_path):
     assert "from smx_leads import setup_leads as _setup_leads" in setup_text
     assert "def setup_leads" in setup_text
     assert "def register_leads_plugin" in setup_text
+    assert "def register_leads_plugin(smx_app, *, init_schema: bool = True, ai_profile=None):" in setup_text
     assert "PROJECT_ROOT = Path(__file__).resolve().parents[2]" in setup_text
+    assert "ai_profile=ai_profile" in setup_text
 
     assert "SMX_LEADS_DATABASE_URL=sqlite+pysqlite:///" in env_text
     assert "SMX_LEADS_ADMIN_TOKEN=local-leads-admin-token" in env_text

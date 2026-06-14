@@ -21,7 +21,7 @@ class FakeLeadAIClient:
         }
 
 
-def create_app(ai_client=None):
+def create_app(ai_client=None, ai_profile=None):
     app = Flask(__name__)
     init_leads(
         app,
@@ -34,6 +34,7 @@ def create_app(ai_client=None):
             "module_title": "Leads",
         },
         init_schema=True,
+        ai_profile=ai_profile,
         ai_client=ai_client,
     )
     return app
@@ -136,3 +137,26 @@ def test_admin_ai_analyze_json_response():
     assert payload["ai_insight"]["summary"] == "Bob wants a demo for the AI platform."
     assert payload["ai_insight"]["category"] == "demo_request"
     assert payload["ai_insight"]["priority"] == "high"
+
+
+def test_admin_ai_analyze_accepts_host_built_ai_profile():
+    fake_ai = FakeLeadAIClient()
+    client = create_app(
+        ai_profile={
+            "provider": "xai",
+            "model": "grok-test",
+            "client": fake_ai,
+        }
+    ).test_client()
+    lead_id = seed_lead(client)
+    login(client)
+
+    response = client.post(
+        f"/leads/admin/submissions/{lead_id}/ai/analyze",
+        headers={"Accept": "application/json"},
+    )
+
+    assert response.status_code == 201
+    payload = response.get_json()
+    assert payload["ai_insight"]["summary"] == "Bob wants a demo for the AI platform."
+    assert len(fake_ai.prompts) == 1

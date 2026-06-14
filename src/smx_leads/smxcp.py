@@ -131,7 +131,7 @@ from smx_leads import setup_leads as _setup_leads
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-def setup_leads(smx_app, *, init_schema: bool = True):
+def setup_leads(smx_app, *, init_schema: bool = True, ai_profile=None):
     """
     Initialize smx-leads for this client project.
 
@@ -142,13 +142,15 @@ def setup_leads(smx_app, *, init_schema: bool = True):
         app=smx_app,
         project_root=PROJECT_ROOT,
         init_schema=init_schema,
+        ai_profile=ai_profile,
     )
 
-def register_leads_plugin(smx_app, *, init_schema: bool = True):
+def register_leads_plugin(smx_app, *, init_schema: bool = True, ai_profile=None):
     return _setup_leads(
         app=smx_app,
         project_root=PROJECT_ROOT,
         init_schema=init_schema,
+        ai_profile=ai_profile,
     )
 '''
 

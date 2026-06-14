@@ -3,6 +3,7 @@
 from pathlib import Path
 from flask import Blueprint
 
+from smx_leads.ai import build_lead_ai_client_from_profile
 from smx_leads.core.config import build_leads_config_from_env
 from smx_leads.routes_admin import create_admin_leads_blueprint
 from smx_leads.routes_public import create_public_leads_blueprint
@@ -30,7 +31,14 @@ def create_leads_static_blueprint() -> Blueprint:
     )
 
 
-def init_leads(app, *, config=None, init_schema: bool = False, ai_client=None):
+def init_leads(
+    app,
+    *,
+    config=None,
+    init_schema: bool = False,
+    ai_profile=None,
+    ai_client=None,
+):
     """
     Initialize smx-leads.
     """
@@ -44,10 +52,12 @@ def init_leads(app, *, config=None, init_schema: bool = False, ai_client=None):
     if init_schema:
         runtime.init_schema()
 
+    resolved_ai_client = ai_client or build_lead_ai_client_from_profile(ai_profile)
+
     app.register_blueprint(create_leads_static_blueprint())
     app.register_blueprint(create_leads_assets_blueprint(runtime))
     app.register_blueprint(create_public_leads_blueprint(runtime))
-    app.register_blueprint(create_admin_leads_blueprint(runtime, ai_client=ai_client))
+    app.register_blueprint(create_admin_leads_blueprint(runtime, ai_client=resolved_ai_client))
 
     return app
 
@@ -57,6 +67,7 @@ def init_leads_from_env(
     *,
     env_file: str = "plugins/leads/.smx_leads.env",
     init_schema: bool = False,
+    ai_profile=None,
     ai_client=None,
 ):
     """
@@ -68,6 +79,7 @@ def init_leads_from_env(
         app,
         config=config,
         init_schema=init_schema,
+        ai_profile=ai_profile,
         ai_client=ai_client,
     )
 
@@ -77,6 +89,7 @@ def setup_leads(
     *,
     project_root=None,
     init_schema: bool = True,
+    ai_profile=None,
     ai_client=None,
 ):
     """
@@ -88,6 +101,7 @@ def setup_leads(
         app,
         env_file=scaffold.env_file,
         init_schema=init_schema,
+        ai_profile=ai_profile,
         ai_client=ai_client,
     )
 
