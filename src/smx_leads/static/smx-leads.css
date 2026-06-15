@@ -513,3 +513,25 @@ th {
     flex-direction: column;
   }
 }
+
+
+.smx-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.smx-table-actions form {
+  margin: 0;
+}
+
+.smx-danger-button {
+  border-color: #b42318;
+  background: #fff5f5;
+  color: #b42318;
+}
+
+.smx-danger-button:hover {
+  background: #ffe3e3;
+}

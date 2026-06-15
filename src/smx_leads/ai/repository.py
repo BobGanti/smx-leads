@@ -89,6 +89,20 @@ class LeadAIInsightRepository:
 
         return items[0]
 
+    def delete_for_lead(self, *, lead_public_id: str) -> int:
+        rows = self.session.scalars(
+            select(LeadAIInsightRow).where(
+                LeadAIInsightRow.lead_public_id == lead_public_id
+            )
+        ).all()
+
+        for row in rows:
+            self.session.delete(row)
+
+        self.session.flush()
+
+        return len(rows)
+
 
 def _to_domain(row: LeadAIInsightRow) -> StoredLeadAIInsight:
     return StoredLeadAIInsight(

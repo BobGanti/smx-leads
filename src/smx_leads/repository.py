@@ -139,6 +139,17 @@ class LeadRepository:
 
         return _to_domain(row)
 
+    def delete_submission(self, *, public_id: str) -> bool:
+        row = self._get_row(public_id)
+
+        if row is None:
+            return False
+
+        self.session.delete(row)
+        self.session.flush()
+
+        return True
+
     def _get_row(self, public_id: str) -> LeadSubmissionRow | None:
         statement = select(LeadSubmissionRow).where(
             LeadSubmissionRow.public_id == public_id

@@ -298,6 +298,35 @@ def create_admin_leads_blueprint(runtime: LeadsRuntime, *, ai_client=None) -> Bl
         return redirect(f"/leads/admin/submissions/{public_id}", code=303)
 
 
+    @bp.post("/leads/admin/submissions/<public_id>/delete")
+    @require_admin
+    def delete_submission(public_id: str):
+        with runtime.session_scope() as db_session:
+            ai_repo = LeadAIInsightRepository(db_session)
+            ai_repo.delete_for_lead(lead_public_id=public_id)
+
+            repo = LeadRepository(db_session)
+            deleted = repo.delete_submission(public_id=public_id)
+
+        if not deleted:
+            if _wants_json():
+                return jsonify({"error": "Lead submission not found."}), 404
+
+            return render_template(
+                "admin/submission_detail.html",
+                leads_config=runtime.config,
+                submission=None,
+                statuses=[item.value for item in LeadSubmissionStatus],
+                ai_insight=None,
+                error="Lead submission not found.",
+            ), 404
+
+        if _wants_json():
+            return jsonify({"status": "ok", "deleted": True, "public_id": public_id})
+
+        return redirect("/leads/admin/submissions", code=303)
+
+
     @bp.post("/leads/admin/submissions/<public_id>/ai/analyze")
     @require_admin
     def analyze_submission_with_ai(public_id: str):

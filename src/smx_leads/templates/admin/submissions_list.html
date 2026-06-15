@@ -80,7 +80,7 @@
               <th>Source</th>
               <th>Status</th>
               <th>Subject</th>
-              <th>Open</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +92,14 @@
                 <td>{{ item.source }}</td>
                 <td>{{ item.status }}</td>
                 <td>{{ item.subject }}</td>
-                <td><a href="/leads/admin/submissions/{{ item.public_id }}">View</a></td>
+                <td>
+                  <div class="smx-table-actions">
+                    <a href="/leads/admin/submissions/{{ item.public_id }}">View</a>
+                    <form method="post" action="/leads/admin/submissions/{{ item.public_id }}/delete" onsubmit="return confirm('Remove this ticket? This cannot be undone.');">
+                      <button class="smx-danger-button" type="submit">Remove</button>
+                    </form>
+                  </div>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
