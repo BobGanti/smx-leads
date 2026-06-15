@@ -365,3 +365,151 @@ th {
   }
 }
 
+.smx-ai-usage {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #d7e3ea;
+  border-radius: 16px;
+  background: #f8fbfc;
+}
+
+.smx-ai-usage-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.smx-ai-usage-header h3 {
+  margin: 0;
+}
+
+.smx-ai-usage-header p {
+  margin: 0.25rem 0 0;
+  color: #587083;
+}
+
+.smx-ai-usage-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  background: #e6f4f1;
+  color: #00796b;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.smx-token-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.smx-token-card {
+  padding: 0.85rem;
+  border: 1px solid #dbe6ee;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.smx-token-card span {
+  display: block;
+  color: #587083;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.smx-token-card strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.smx-token-card-total {
+  border-color: #00796b;
+  background: #f0faf7;
+}
+
+.smx-usage-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.smx-usage-profile-card {
+  padding: 1rem;
+  border: 1px solid #dbe6ee;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.smx-usage-profile-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.smx-usage-profile-title h4 {
+  margin: 0;
+}
+
+.smx-usage-profile-title span {
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  background: #edf3f7;
+  color: #34495e;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.smx-usage-model {
+  margin: 0.35rem 0 0.85rem;
+  color: #587083;
+  font-size: 0.9rem;
+}
+
+.smx-usage-profile-card dl {
+  margin: 0;
+}
+
+.smx-usage-profile-card dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid #eef3f6;
+}
+
+.smx-usage-profile-card dt {
+  color: #587083;
+  font-weight: 700;
+}
+
+.smx-usage-profile-card dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.smx-ai-usage-note {
+  margin: 0.9rem 0 0;
+  color: #587083;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 760px) {
+  .smx-token-summary-grid,
+  .smx-usage-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .smx-ai-usage-header {
+    flex-direction: column;
+  }
+}

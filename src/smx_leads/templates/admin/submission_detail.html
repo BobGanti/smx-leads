@@ -87,52 +87,75 @@
           {% set usage = ai_insight.raw.get("usage", {}) if ai_insight.raw else {} %}
           {% set usage_by_profile = ai_insight.raw.get("usage_by_profile", {}) if ai_insight.raw else {} %}
           {% if usage %}
-            <h3>AI usage</h3>
-
-            {% if usage_by_profile %}
-              <h4>Combined usage</h4>
-            {% endif %}
-            <p><strong>Provider:</strong> {{ usage.get("provider", "") }}</p>
-            <p><strong>Model:</strong> {{ usage.get("model", ai_insight.model_name or "") }}</p>
-            <p><strong>Input tokens:</strong> {{ usage.get("input_tokens", 0) }}</p>
-            <p><strong>Output tokens:</strong> {{ usage.get("output_tokens", 0) }}</p>
             {% set hidden_tokens = usage.get("thinking_tokens", 0) + usage.get("other_tokens", 0) %}
-            {% if hidden_tokens %}
-              <p><strong>Thinking/other tokens:</strong> {{ hidden_tokens }}</p>
-            {% endif %}
-            <p><strong>Total billable/model tokens:</strong> {{ usage.get("total_tokens", 0) }}</p>
+            <section class="smx-ai-usage">
+              <div class="smx-ai-usage-header">
+                <div>
+                  <h3>AI usage</h3>
+                  <p>Token usage for this lead analysis.</p>
+                </div>
+                <span class="smx-ai-usage-badge">{{ usage.get("provider", "") }}</span>
+              </div>
 
-            {% set main_usage = usage_by_profile.get("main", {}) %}
-            {% if main_usage %}
-              <h4>Main profile usage</h4>
-              <p><strong>Provider:</strong> {{ main_usage.get("provider", "") }}</p>
-              <p><strong>Model:</strong> {{ main_usage.get("model", "") }}</p>
-              <p><strong>Input tokens:</strong> {{ main_usage.get("input_tokens", 0) }}</p>
-              <p><strong>Output tokens:</strong> {{ main_usage.get("output_tokens", 0) }}</p>
-              {% set main_hidden_tokens = main_usage.get("thinking_tokens", 0) + main_usage.get("other_tokens", 0) %}
-              {% if main_hidden_tokens %}
-                <p><strong>Thinking/other tokens:</strong> {{ main_hidden_tokens }}</p>
-              {% endif %}
-              <p><strong>Total billable/model tokens:</strong> {{ main_usage.get("total_tokens", 0) }}</p>
-            {% endif %}
+              <div class="smx-token-summary-grid">
+                <div class="smx-token-card">
+                  <span>Input</span>
+                  <strong>{{ usage.get("input_tokens", 0) }}</strong>
+                </div>
+                <div class="smx-token-card">
+                  <span>Output</span>
+                  <strong>{{ usage.get("output_tokens", 0) }}</strong>
+                </div>
+                <div class="smx-token-card">
+                  <span>Thinking/other</span>
+                  <strong>{{ hidden_tokens }}</strong>
+                </div>
+                <div class="smx-token-card smx-token-card-total">
+                  <span>Total</span>
+                  <strong>{{ usage.get("total_tokens", 0) }}</strong>
+                </div>
+              </div>
 
-            {% set assistant_usage = usage_by_profile.get("assistant", {}) %}
-            {% if assistant_usage %}
-              <h4>Assistant profile usage</h4>
-              <p><strong>Provider:</strong> {{ assistant_usage.get("provider", "") }}</p>
-              <p><strong>Model:</strong> {{ assistant_usage.get("model", "") }}</p>
-              <p><strong>Input tokens:</strong> {{ assistant_usage.get("input_tokens", 0) }}</p>
-              <p><strong>Output tokens:</strong> {{ assistant_usage.get("output_tokens", 0) }}</p>
-              {% set assistant_hidden_tokens = assistant_usage.get("thinking_tokens", 0) + assistant_usage.get("other_tokens", 0) %}
-              {% if assistant_hidden_tokens %}
-                <p><strong>Thinking/other tokens:</strong> {{ assistant_hidden_tokens }}</p>
-              {% endif %}
-              <p><strong>Total billable/model tokens:</strong> {{ assistant_usage.get("total_tokens", 0) }}</p>
-            {% endif %}
+              <div class="smx-usage-profile-grid">
+                {% set main_usage = usage_by_profile.get("main", {}) %}
+                {% if main_usage %}
+                  {% set main_hidden_tokens = main_usage.get("thinking_tokens", 0) + main_usage.get("other_tokens", 0) %}
+                  <article class="smx-usage-profile-card">
+                    <div class="smx-usage-profile-title">
+                      <h4>Main profile</h4>
+                      <span>{{ main_usage.get("provider", "") }}</span>
+                    </div>
+                    <p class="smx-usage-model">{{ main_usage.get("model", "") }}</p>
+                    <dl>
+                      <div><dt>Input</dt><dd>{{ main_usage.get("input_tokens", 0) }}</dd></div>
+                      <div><dt>Output</dt><dd>{{ main_usage.get("output_tokens", 0) }}</dd></div>
+                      <div><dt>Thinking/other</dt><dd>{{ main_hidden_tokens }}</dd></div>
+                      <div><dt>Total</dt><dd>{{ main_usage.get("total_tokens", 0) }}</dd></div>
+                    </dl>
+                  </article>
+                {% endif %}
 
-            {% if hidden_tokens %}
-              <p><small>Total includes input, visible output, and model thinking/other tokens.</small></p>
-            {% endif %}
+                {% set assistant_usage = usage_by_profile.get("assistant", {}) %}
+                {% if assistant_usage %}
+                  {% set assistant_hidden_tokens = assistant_usage.get("thinking_tokens", 0) + assistant_usage.get("other_tokens", 0) %}
+                  <article class="smx-usage-profile-card">
+                    <div class="smx-usage-profile-title">
+                      <h4>Assistant profile</h4>
+                      <span>{{ assistant_usage.get("provider", "") }}</span>
+                    </div>
+                    <p class="smx-usage-model">{{ assistant_usage.get("model", "") }}</p>
+                    <dl>
+                      <div><dt>Input</dt><dd>{{ assistant_usage.get("input_tokens", 0) }}</dd></div>
+                      <div><dt>Output</dt><dd>{{ assistant_usage.get("output_tokens", 0) }}</dd></div>
+                      <div><dt>Thinking/other</dt><dd>{{ assistant_hidden_tokens }}</dd></div>
+                      <div><dt>Total</dt><dd>{{ assistant_usage.get("total_tokens", 0) }}</dd></div>
+                    </dl>
+                  </article>
+                {% endif %}
+              </div>
+
+              <p class="smx-ai-usage-note">Total includes input, visible output, and model thinking/other tokens.</p>
+            </section>
           {% endif %}
 
           <h3>Recommended action</h3>

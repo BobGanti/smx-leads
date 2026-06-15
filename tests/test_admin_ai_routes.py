@@ -1,4 +1,4 @@
-﻿from flask import Flask
+from flask import Flask
 
 from smx_leads import init_leads
 
@@ -128,13 +128,13 @@ def test_admin_ai_analyze_persists_insight_and_redirects():
     assert "Offer demo slots within 24 hours." in html
     assert "Hi Bob, thanks for your interest" in html
     assert "AI usage" in html
-    assert "Input tokens:" in html
+    assert "smx-ai-usage" in html
     assert "11" in html
-    assert "Output tokens:" in html
+    assert "Output</span>" in html
     assert "7" in html
-    assert "Thinking/other tokens:" in html
+    assert "Thinking/other</span>" in html
     assert "5" in html
-    assert "Total billable/model tokens:" in html
+    assert "Total</span>" in html
     assert "23" in html
 
 
